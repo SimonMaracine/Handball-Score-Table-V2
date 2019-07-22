@@ -74,3 +74,23 @@ class Timer:
         minutes = time // 60
         seconds = time % 60
         return "{:02d}:{:02d}".format(minutes, seconds)
+
+
+class PlayerTimer(Timer):
+
+    def __init__(self, text_variable, player_number: int, countdown: int = 60):
+        super().__init__(text_variable, countdown)
+        self.player_number = player_number
+
+    def _run(self):
+        print("started _run")
+        while self._going:
+            s = default_timer()
+            self._tick()
+            self._text_variable.set("{} | {}".format(self.player_number, Timer._repr(self._time)))
+            if self._time <= 0:
+                self.stop()
+            sleep(0.999)
+            f = default_timer()
+            print(f - s)
+        print("finished _run")

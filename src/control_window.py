@@ -153,11 +153,14 @@ class ControlWindow:
 
         # Match round
         ###########################################################################################
-        match_round = tk.Frame(self.content, borderwidth=5, relief="sunken")
+        match = tk.Frame(self.content)
+        match_round = tk.Frame(match, borderwidth=5, relief="sunken")
         self.round_num_var = tk.IntVar(self.content, value=1)
         tk.Label(match_round, textvariable=self.round_num_var, font="Times, 50").pack(padx=30, pady=5)
 
-        match_round.grid(column=1, row=1)
+        match_round.grid(column=0, row=0, rowspan=2)
+
+        match.grid(column=1, row=1)
 
         # Timer buttons
         ###########################################################################################
@@ -165,9 +168,10 @@ class ControlWindow:
         tk.Button(main_timer, text="Pause", command=timer.pause).grid(column=1, row=1)
         tk.Button(main_timer, text="Stop", command=timer.stop).grid(column=2, row=1)
 
-        # Round number buttons
+        # Round buttons
         ###########################################################################################
-        ...
+        tk.Button(match, text="Up", command=self.round_up).grid(column=1, row=0)
+        tk.Button(match, text="Down", command=self.round_down).grid(column=1, row=1)
 
         # Menu for players
         ###########################################################################################
@@ -287,6 +291,14 @@ class ControlWindow:
                         break
                 else:
                     print("Could not find " + str(self.__selected_player) + " in suspended players")
+
+    def round_up(self):
+        if self.round_num_var.get() < 9:
+            self.round_num_var.set(self.round_num_var.get() + 1)
+
+    def round_down(self):
+        if self.round_num_var.get() > 1:
+            self.round_num_var.set(self.round_num_var.get() - 1)
 
     def open_spectator_window(self):
         window = tk.Toplevel()

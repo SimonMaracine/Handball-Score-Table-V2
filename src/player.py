@@ -46,7 +46,7 @@ class Player:
 
     def suspend(self) -> bool:
         if not self.suspended:
-            self.timer = PlayerTimer(self.suspend_text_var, self.number, 180)
+            self.timer = PlayerTimer(self.suspend_text_var, self.number, 8)
             self.timer.start()
             self.suspended = True
             return True

@@ -94,3 +94,13 @@ class PlayerTimer(Timer):
             f = default_timer()
             print(f - s)
         print("finished _run")
+
+    def stop(self):
+        if self._going or self._paused:
+            self._going = False
+            self._paused = False
+            self._time = self._countdown
+            self._text_variable.set("{} | {}".format(self.player_number, Timer._repr(self._time)))
+            print("Stopped timer")
+        else:
+            print("Timer is not going; nothing to stop")

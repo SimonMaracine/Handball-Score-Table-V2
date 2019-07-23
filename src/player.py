@@ -4,7 +4,7 @@ from src.timer import PlayerTimer
 
 class Player:
 
-    def __init__(self, name: str, number: int, team):
+    def __init__(self, name: str, number: int, team, timer_on_finish):
         self.name = name
         self.number = number
         self.team = team
@@ -15,6 +15,7 @@ class Player:
         self.red_cards = 0
         self.timer = None
         self.suspend_text_var = tk.StringVar(value="{} | 00:00".format(self.number))
+        self.timer_on_finish = timer_on_finish
 
     def __repr__(self):
         return "Player {} [{}] - {}".format(self.name, self.number, self.team)
@@ -44,22 +45,27 @@ class Player:
             if self.yellow_cards >= 1:
                 self.yellow_cards -= 1
 
-    def suspend(self) -> bool:
+    def suspend(self, start=True):
         if not self.suspended:
-            self.timer = PlayerTimer(self.suspend_text_var, self.number, 8)
-            self.timer.start()
+            self.timer = PlayerTimer(self.suspend_text_var, self.timer_on_finish, self, 120)
+            if start:
+                self.timer.start()
             self.suspended = True
-            return True
         else:
             print("Player already suspended")
-            return False
 
     def release(self):
         if self.suspended:
-            self.timer.stop()
             self.suspended = False
+            self.timer.stop()
         else:
             print("Player is not suspended")
+
+    def can_suspend(self) -> bool:
+        if not self.suspended:
+            return True
+        else:
+            return False
 
     def can_release(self) -> bool:
         if self.suspended:

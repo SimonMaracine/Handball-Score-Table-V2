@@ -11,7 +11,7 @@ class ControlWindow:
     def __init__(self, root: tk.Tk):
         self.root = root
         self.root.option_add("*tearOff", False)
-        self.root.minsize(width=1235, height=690)
+        self.root.minsize(width=1235, height=630)
         menu_bar = tk.Menu()
         self.root.config(menu=menu_bar)
         self.content = tk.Frame(self.root)
@@ -50,12 +50,12 @@ class ControlWindow:
         self.team1 = Team("The Team", 1)
         self.team2 = Team("Double Power", 2)
 
-        self.__players1 = (Player("Theodore", 16, self.team1),
-                           Player("Simon", 17, self.team1),
-                           Player("Jane", 18, self.team1))
+        self.__players1 = (Player("Theodore", 16, self.team1, self.release_from_timer),
+                           Player("Simon", 17, self.team1, self.release_from_timer),
+                           Player("Jane", 18, self.team1, self.release_from_timer))
 
-        self.__players2 = (Player("Paul", 29, self.team2),
-                           Player("Andrew", 64, self.team2))
+        self.__players2 = (Player("Paul", 29, self.team2, self.release_from_timer),
+                           Player("Andrew", 64, self.team2, self.release_from_timer))
 
         for player in self.__players1:
             self.team1.add_player(player)
@@ -73,6 +73,7 @@ class ControlWindow:
         self.__selected_player = None
         self.suspended_players1 = []
         self.suspended_players2 = []
+        self.is_time_out = False
 
         # Team 1
         ###########################################################################################
@@ -87,9 +88,10 @@ class ControlWindow:
             size = 28
         tk.Label(team1_name, text=self.team1.name, font="Times, {}".format(size)).pack(padx=10, pady=25)
 
-        team1_score = tk.Frame(container1, borderwidth=3, relief="sunken")
+        score1 = tk.Frame(container1)
+        team1_score = tk.Frame(score1, borderwidth=3, relief="sunken")
         self.score_team1_var = tk.IntVar(container1, value=0)
-        tk.Label(team1_score, textvariable=self.score_team1_var, font="Times, 35").pack(padx=30, pady=10)
+        tk.Label(team1_score, textvariable=self.score_team1_var, font="Times, 34").pack(padx=24, pady=10)
 
         team1_players = tk.Frame(container1, borderwidth=3, relief="sunken")
         players1_list = tk.Listbox(team1_players, font="Times, 15", height=17)
@@ -101,9 +103,10 @@ class ControlWindow:
         self.team1_suspended.pack_propagate(False)
 
         players1_list.pack(padx=2, pady=2)
+        team1_score.grid(column=0, row=0)
 
         team1_name.grid(column=0, row=0)
-        team1_score.grid(column=1, row=0)
+        score1.grid(column=1, row=0)
         team1_players.grid(column=0, row=1)
         self.team1_suspended.grid(column=1, row=1)
 
@@ -120,9 +123,10 @@ class ControlWindow:
             size = 28
         tk.Label(team2_name, text=self.team2.name, font="Times, {}".format(size)).pack(padx=10, pady=25)
 
-        team2_score = tk.Frame(container1, borderwidth=3, relief="sunken")
+        score2 = tk.Frame(container1)
+        team2_score = tk.Frame(score2, borderwidth=3, relief="sunken")
         self.score_team2_var = tk.IntVar(container1, value=0)
-        tk.Label(team2_score, textvariable=self.score_team2_var, font="Times, 35").pack(padx=30, pady=10)
+        tk.Label(team2_score, textvariable=self.score_team2_var, font="Times, 34").pack(padx=24, pady=10)
 
         team2_players = tk.Frame(container1, borderwidth=3, relief="sunken")
         players2_list = tk.Listbox(team2_players, font="Times, 15", height=17)
@@ -134,20 +138,22 @@ class ControlWindow:
         self.team2_suspended.pack_propagate(False)
 
         players2_list.pack(padx=2, pady=2)
+        team2_score.grid(column=1, row=0)
 
         team2_name.grid(column=3, row=0)
-        team2_score.grid(column=2, row=0)
+        score2.grid(column=2, row=0)
         team2_players.grid(column=3, row=1)
         self.team2_suspended.grid(column=2, row=1)
 
         # Main timer
         ###########################################################################################
         self.time_var = tk.StringVar(self.content, value="00:00")
-        timer = Timer(self.time_var, 3600)
-        self.time_var.set(timer.get_time())
+        self.timer = Timer(self.time_var, None, 3600)
+        self.time_var.set(self.timer.get_time())
 
         main_timer = tk.Frame(self.content, borderwidth=5, relief="sunken")
-        tk.Label(main_timer, textvariable=self.time_var, font="Times, 71").grid(column=0, row=0, columnspan=3)
+        self.timer_text = tk.Label(main_timer, textvariable=self.time_var, font="Times, 71")
+        self.timer_text.grid(column=0, row=0, columnspan=3)
 
         main_timer.grid(column=1, row=0)
 
@@ -162,16 +168,31 @@ class ControlWindow:
 
         match.grid(column=1, row=1)
 
+        # Time-out timer
+        ###########################################################################################
+        self.time_out_var = tk.StringVar(self.content, value="00:00")
+        self.time_out_timer = Timer(self.time_out_var, lambda: self.back_to_game(), 60)
+        self.time_out_var.set(self.time_out_timer.get_time())
+
+        self.time_out_timer_text = tk.Label(main_timer, textvariable=self.time_out_var, font="Times, 65")
+        self.time_out_timer_text.grid(column=0, row=0, columnspan=3)
+        self.time_out_timer_text.grid_remove()
+
         # Timer buttons
         ###########################################################################################
-        tk.Button(main_timer, text="Start", command=timer.start).grid(column=0, row=1)
-        tk.Button(main_timer, text="Pause", command=timer.pause).grid(column=1, row=1)
-        tk.Button(main_timer, text="Stop", command=timer.stop).grid(column=2, row=1)
+        tk.Button(main_timer, text="Start", command=self.start).grid(column=0, row=1)
+        tk.Button(main_timer, text="Pause", command=self.pause).grid(column=1, row=1)
+        tk.Button(main_timer, text="Stop", command=self.stop).grid(column=2, row=1)
 
         # Round buttons
         ###########################################################################################
         tk.Button(match, text="Up", command=self.round_up).grid(column=1, row=0)
         tk.Button(match, text="Down", command=self.round_down).grid(column=1, row=1)
+
+        # Time out buttons
+        ###########################################################################################
+        tk.Button(score1, text="T", command=lambda: self.time_out(self.team1)).grid(column=1, row=0, sticky=tk.S)
+        tk.Button(score2, text="T", command=lambda: self.time_out(self.team2)).grid(column=0, row=0, sticky=tk.S)
 
         # Menu for players
         ###########################################################################################
@@ -257,7 +278,12 @@ class ControlWindow:
                                     "{} red".format(self.__selected_player.red_cards))
 
     def suspend(self):
-        if self.__selected_player.suspend():
+        if self.__selected_player.can_suspend():
+            if not self.timer.get_going() or self.time_out_timer.get_going():
+                self.__selected_player.suspend(False)
+            else:
+                self.__selected_player.suspend()
+
             if self.__selected_player.team.order == 1:
                 suspended = tk.Label(self.team1_suspended, textvariable=self.__selected_player.suspend_text_var,
                                      font="Times, 15")
@@ -292,6 +318,28 @@ class ControlWindow:
                 else:
                     print("Could not find " + str(self.__selected_player) + " in suspended players")
 
+    def release_from_timer(self, player: Player):
+        if player.team.order == 1:
+            for suspended in self.suspended_players1:
+                # print(suspended["text"][0:2])
+                if int((suspended["text"])[0:2]) == player.number:
+                    player.release()
+                    suspended.destroy()
+                    self.suspended_players1.remove(suspended)
+                    break
+            else:
+                print("Could not find " + str(player) + " in suspended players")
+        else:
+            for suspended in self.suspended_players2:
+                # print(suspended["text"][0:2])
+                if int((suspended["text"])[0:2]) == player.number:
+                    player.release()
+                    suspended.destroy()
+                    self.suspended_players2.remove(suspended)
+                    break
+            else:
+                print("Could not find " + str(player) + " in suspended players")
+
     def round_up(self):
         if self.round_num_var.get() < 9:
             self.round_num_var.set(self.round_num_var.get() + 1)
@@ -299,6 +347,60 @@ class ControlWindow:
     def round_down(self):
         if self.round_num_var.get() > 1:
             self.round_num_var.set(self.round_num_var.get() - 1)
+
+    def start(self):
+        if not self.is_time_out:
+            self.timer.start()
+            self.do_players_timers(0)
+        else:
+            self.time_out_timer.start()
+
+    def pause(self):
+        if not self.is_time_out:
+            self.timer.pause()
+            self.do_players_timers(2)
+        else:
+            self.time_out_timer.pause()
+
+    def stop(self):
+        if not self.is_time_out:
+            self.timer.stop()
+            self.do_players_timers(1)
+        else:
+            self.time_out_timer.stop()
+            self.do_players_timers(1)
+            self.back_to_game()
+
+    def time_out(self, team: Team):
+        if not self.is_time_out and self.timer.get_going():
+            team.request_time_out()
+            self.timer.pause()
+            self.do_players_timers(2)
+            self.timer_text.grid_remove()
+
+            self.time_out_timer.start()
+            self.time_out_timer_text.grid()
+            self.is_time_out = True
+
+    def back_to_game(self):
+        self.time_out_timer_text.grid_remove()
+        self.timer_text.grid()
+        self.is_time_out = False
+        # print(0)
+
+    def do_players_timers(self, todo=0):
+        if todo == 0:  # start
+            for player in self.team1.players + self.team2.players:
+                if player.suspended:
+                    player.timer.start()
+        elif todo == 1:  # stop
+            for player in self.team1.players + self.team2.players:
+                if player.suspended:
+                    self.release_from_timer(player)
+        else:  # pause
+            for player in self.team1.players + self.team2.players:
+                if player.suspended:
+                    player.timer.pause()
 
     def open_spectator_window(self):
         window = tk.Toplevel()

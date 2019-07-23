@@ -5,6 +5,7 @@ class Team:
         self.order = order
         self.players = []
         self.score = 0
+        self.time_out_requests = 0
 
     def __str__(self):
         return "Team {}".format(self.name)
@@ -21,3 +22,6 @@ class Team:
 
     def sort_players(self):
         self.players.sort(key=lambda player: player.name)
+
+    def request_time_out(self):
+        self.time_out_requests += 1

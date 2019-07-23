@@ -5,8 +5,9 @@ from timeit import default_timer
 
 class Timer:
 
-    def __init__(self, text_variable, countdown: int = 60):
+    def __init__(self, text_variable, on_finish, countdown: int = 60):
         self._text_variable = text_variable
+        self._on_finish = on_finish
         self._countdown = countdown
         self._time = self._countdown
         self._thread = threading.Thread
@@ -49,6 +50,10 @@ class Timer:
             self._paused = False
             self._time = self._countdown
             self._text_variable.set(Timer._repr(self._time))
+            try:
+                self._on_finish()
+            except TypeError:
+                pass
             print("Stopped timer")
         else:
             print("Timer is not going; nothing to stop")
@@ -78,16 +83,16 @@ class Timer:
 
 class PlayerTimer(Timer):
 
-    def __init__(self, text_variable, player_number: int, countdown: int = 60):
-        super().__init__(text_variable, countdown)
-        self.player_number = player_number
+    def __init__(self, text_variable, on_finish, player, countdown: int = 60):
+        super().__init__(text_variable, on_finish, countdown)
+        self.player = player
 
     def _run(self):
         print("started _run")
         while self._going:
             s = default_timer()
             self._tick()
-            self._text_variable.set("{} | {}".format(self.player_number, Timer._repr(self._time)))
+            self._text_variable.set("{} | {}".format(self.player.number, Timer._repr(self._time)))
             if self._time <= 0:
                 self.stop()
             sleep(0.999)
@@ -100,7 +105,13 @@ class PlayerTimer(Timer):
             self._going = False
             self._paused = False
             self._time = self._countdown
-            self._text_variable.set("{} | {}".format(self.player_number, Timer._repr(self._time)))
+            self._text_variable.set("{} | {}".format(self.player.number, Timer._repr(self._time)))
             print("Stopped timer")
+            try:
+                if self.player.suspended:
+                    self._on_finish(self.player)
+                    print(111)
+            except TypeError:
+                pass
         else:
             print("Timer is not going; nothing to stop")

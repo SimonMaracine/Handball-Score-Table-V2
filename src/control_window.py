@@ -77,6 +77,7 @@ class ControlWindow:
 
         # Team 1
         ###########################################################################################
+        self.name_team1_var = tk.StringVar(container1, value=self.team1.name)
         team1_name = tk.Frame(container1, borderwidth=5, relief="sunken")
         if len(self.team2.name) >= 20:
             size = 14
@@ -86,7 +87,7 @@ class ControlWindow:
             size = 27
         else:
             size = 28
-        tk.Label(team1_name, text=self.team1.name, font="Times, {}".format(size)).pack(padx=10, pady=25)
+        tk.Label(team1_name, textvariable=self.name_team1_var, font="Times, {}".format(size)).pack(padx=10, pady=25)
 
         score1 = tk.Frame(container1)
         team1_score = tk.Frame(score1, borderwidth=3, relief="sunken")
@@ -112,6 +113,7 @@ class ControlWindow:
 
         # Team 2
         ###########################################################################################
+        self.name_team2_var = tk.StringVar(container1, value=self.team2.name)
         team2_name = tk.Frame(container1, borderwidth=5, relief="sunken")
         if len(self.team2.name) >= 20:
             size = 14
@@ -121,7 +123,7 @@ class ControlWindow:
             size = 27
         else:
             size = 28
-        tk.Label(team2_name, text=self.team2.name, font="Times, {}".format(size)).pack(padx=10, pady=25)
+        tk.Label(team2_name, textvariable=self.name_team2_var, font="Times, {}".format(size)).pack(padx=10, pady=25)
 
         score2 = tk.Frame(container1)
         team2_score = tk.Frame(score2, borderwidth=3, relief="sunken")
@@ -252,6 +254,8 @@ class ControlWindow:
     def score_up(self):
         self.__selected_player.score_up()
         self.selected_scores_var.set("Score: " + str(self.__selected_player.scores))
+        self.__selected_player.text_var.set("{} [{}]    {}".format(self.__selected_player.name, self.__selected_player.number,
+                                                                  self.__selected_player.scores))
         if self.__selected_player.team.order == 1:
             self.score_team1_var.set(self.__selected_player.team.score)
         else:
@@ -260,6 +264,8 @@ class ControlWindow:
     def score_down(self):
         self.__selected_player.score_down()
         self.selected_scores_var.set("Score: " + str(self.__selected_player.scores))
+        self.__selected_player.text_var.set("{} [{}]    {}".format(self.__selected_player.name, self.__selected_player.number,
+                                                                  self.__selected_player.scores))
         if self.__selected_player.team.order == 1:
             self.score_team1_var.set(self.__selected_player.team.score)
         else:
@@ -270,12 +276,16 @@ class ControlWindow:
         self.selected_cards_var.set("Cards: " +
                                     "{} yellow, ".format(self.__selected_player.yellow_cards) +
                                     "{} red".format(self.__selected_player.red_cards))
+        self.__selected_player.text_var.set("{} [{}]    {}".format(self.__selected_player.name, self.__selected_player.number,
+                                                                  self.__selected_player.scores))
 
     def take_card(self, color: str):
         self.__selected_player.take_card(color)
         self.selected_cards_var.set("Cards: " +
                                     "{} yellow, ".format(self.__selected_player.yellow_cards) +
                                     "{} red".format(self.__selected_player.red_cards))
+        self.__selected_player.text_var.set("{} [{}]    {}".format(self.__selected_player.name, self.__selected_player.number,
+                                                                  self.__selected_player.scores))
 
     def suspend(self):
         if self.__selected_player.can_suspend():
@@ -404,7 +414,10 @@ class ControlWindow:
 
     def open_spectator_window(self):
         window = tk.Toplevel()
-        SpectatorWindow(window, time_var=self.time_var, round_num_var=self.round_num_var)
+        SpectatorWindow(window, players1=self.team1.players, players2=self.team2.players, time_var=self.time_var,
+                        round_num_var=self.round_num_var, score_team1_var=self.score_team1_var,
+                        score_team2_var=self.score_team2_var, name_team1_var=self.name_team1_var,
+                        name_team2_var=self.name_team2_var)
 
     def close_spectator_window(self):
         pass

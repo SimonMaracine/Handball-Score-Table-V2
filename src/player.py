@@ -17,6 +17,7 @@ class Player:
         self.timer = None
         self.suspend_text_var = tk.StringVar(value="{} | 00:00".format(self.number))
         self.timer_on_finish = timer_on_finish
+        self.text_var = tk.StringVar()
 
     def __repr__(self):
         return "Player {} [{}] - {}".format(self.name, self.number, self.team)

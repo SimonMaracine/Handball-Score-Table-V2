@@ -13,24 +13,16 @@ class SpectatorWindow:
         # Team 1
         ###########################################################################################
         team1_name = tk.Frame(self.content, borderwidth=5, relief="sunken", width=400, height=100)
-        tk.Label(team1_name, text="Home", font="Times, 40").pack(padx=70, pady=20)
+        tk.Label(team1_name, textvariable=self.name_team1_var, font="Times, 40").pack(padx=10, pady=20)
 
         team1_score = tk.Frame(self.content, borderwidth=3, relief="sunken")
-        score_team1 = tk.IntVar(self.content, value=0)
-        tk.Label(team1_score, text="{}".format(score_team1.get()), font="Times, 35").pack(padx=30, pady=10)
+        tk.Label(team1_score, textvariable=self.score_team1_var, font="Times, 35").pack(padx=24, pady=10)
 
-        team1_players = tk.Frame(self.content, borderwidth=3, relief="sunken")
-        players1 = tk.Listbox(team1_players, font="Times, 15", height=17)
-        for i in range(5):
-            players1.insert(i, "Player {}".format(i + 1))
+        team1_players = tk.Frame(self.content, borderwidth=3, relief="sunken", width=290, height=450)
+        team1_players.pack_propagate(False)
 
-        team1_suspended = tk.Frame(self.content, borderwidth=5, relief="sunken")
-        players_suspended1 = tk.Listbox(team1_suspended, font="Times, 14", width=14, height=17)
-        for i in range(2):
-            players_suspended1.insert(i, "I'm suspended")
-
-        players1.pack(padx=2, pady=2)
-        players_suspended1.pack(padx=2, pady=2)
+        team1_suspended = tk.Frame(self.content, borderwidth=5, relief="sunken", width=190, height=430)
+        team1_suspended.grid_propagate(False)
 
         team1_name.grid(column=0, row=0)
         team1_score.grid(column=0, row=1)
@@ -40,29 +32,40 @@ class SpectatorWindow:
         # Team 2
         ###########################################################################################
         team2_name = tk.Frame(self.content, borderwidth=5, relief="sunken", width=400, height=100)
-        tk.Label(team2_name, text="Guest", font="Times, 40").pack(padx=70, pady=20)
+        tk.Label(team2_name, textvariable=self.name_team2_var, font="Times, 40").pack(padx=10, pady=20)
 
         team2_score = tk.Frame(self.content, borderwidth=3, relief="sunken")
-        score_team2 = tk.IntVar(self.content, value=0)
-        tk.Label(team2_score, text="{}".format(score_team2.get()), font="Times, 35").pack(padx=30, pady=10)
+        tk.Label(team2_score, textvariable=self.score_team2_var, font="Times, 35").pack(padx=24, pady=10)
 
-        team2_players = tk.Frame(self.content, borderwidth=3, relief="sunken")
-        players2 = tk.Listbox(team2_players, font="Times, 15", height=17)
-        for i in range(5):
-            players2.insert(i, "Player {}".format(i + 1))
+        team2_players = tk.Frame(self.content, borderwidth=3, relief="sunken", width=290, height=450)
+        team2_players.pack_propagate(False)
 
-        team2_suspended = tk.Frame(self.content, borderwidth=5, relief="sunken")
-        players_suspended2 = tk.Listbox(team2_suspended, font="Times, 14", width=14, height=17)
-        for i in range(3):
-            players_suspended2.insert(i, "I'm suspended")
-
-        players2.pack(padx=2, pady=2)
-        players_suspended2.pack(padx=2, pady=2)
+        team2_suspended = tk.Frame(self.content, borderwidth=5, relief="sunken", width=190, height=430)
+        team2_suspended.grid_propagate(False)
 
         team2_name.grid(column=3, row=0)
         team2_score.grid(column=3, row=1)
         team2_players.grid(column=3, row=3)
         team2_suspended.grid(column=2, row=3)
+
+        # Init players
+        ###########################################################################################
+        for i, player in enumerate(self.players1):
+            suspended = tk.Label(team1_suspended, textvariable=player.suspend_text_var, font="Times, 15")
+            suspended.grid(row=i, padx=24, pady=2)
+            # suspended.grid_remove()
+
+            player.text_var = tk.StringVar(team1_players, value="{} [{}]    {}".format(player.name, player.number, player.scores))
+            tk.Label(team1_players, textvariable=player.text_var, font="Times, 15").pack(padx=26, pady=2)
+
+        for i, player in enumerate(self.players2):
+            suspended = tk.Label(team2_suspended, textvariable=player.suspend_text_var, font="Times, 15")
+            suspended.grid(row=i, padx=24, pady=2)
+            # suspended.grid_remove()
+
+            player.text_var = tk.StringVar(team2_players,
+                                           value="{} [{}]    {}".format(player.name, player.number, player.scores))
+            tk.Label(team2_players, textvariable=player.text_var, font="Times, 15").pack(padx=26, pady=2)
 
         # Main timer
         ###########################################################################################
@@ -74,6 +77,6 @@ class SpectatorWindow:
         # Match round
         ###########################################################################################
         match_round = tk.Frame(self.content, borderwidth=5, relief="sunken")
-        tk.Label(match_round, text="{}".format(self.round_num_var.get()), font="Times, 55").pack(padx=30, pady=10)
+        tk.Label(match_round, textvariable=self.round_num_var, font="Times, 52").pack(padx=34, pady=8)
 
         match_round.grid(column=1, row=1, columnspan=2)

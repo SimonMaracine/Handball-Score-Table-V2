@@ -4,6 +4,7 @@ from timeit import default_timer
 
 
 class Timer:
+    """Class used to create timer objects for the round itself and for players"""
 
     def __init__(self, text_variable, on_finish, countdown: int = 60):
         self._text_variable = text_variable
@@ -15,18 +16,48 @@ class Timer:
         self._paused = False
 
     def get_time(self) -> str:
+        """Get the time in a readable format
+
+        Returns:
+            str: The current time
+
+        """
         return Timer._repr(self._time)
 
     def get_raw_time(self) -> int:
+        """Get the raw time
+
+        Returns:
+            int: The current time in seconds
+
+        """
         return self._time
 
     def get_going(self) -> bool:
+        """Check if the timer is currently running
+
+        Returns:
+            bool: True if the timer is running, False otherwise
+
+        """
         return self._going
 
     def get_paused(self) -> bool:
+        """Check if the timer is currently paused
+
+        Returns:
+            bool: True if the timer is paused, False otherwise
+
+        """
         return self._paused
 
     def start(self):
+        """Start the timer
+
+        If the timer is already running, this method does nothing.
+        This creates a new thread and starts it immediately with self._run.
+
+        """
         if not self._going:
             self._going = True
             self._paused = False
@@ -37,7 +68,12 @@ class Timer:
             print("Timer is already going")
 
     def pause(self):
-        if self._going:
+        """Pause the timer
+
+        If the timer not running or currently paused, this does nothing.
+
+        """
+        if self._going and not self._paused:
             self._going = False
             self._paused = True
             print("Paused timer")
@@ -45,6 +81,13 @@ class Timer:
             print("Timer is not going; nothing to pause")
 
     def stop(self):
+        """Stop the timer
+
+        If the timer is already stopped, this does nothing.
+        It resets the time, the Tkinter text variable and executes the
+        self._on_finish optional function.
+
+        """
         if self._going or self._paused:
             self._going = False
             self._paused = False
@@ -59,6 +102,12 @@ class Timer:
             print("Timer is not going; nothing to stop")
 
     def _run(self):
+        """The loop of the timer
+
+        This runs until self._going is set to False. It updates the text variable
+        and checks if the time hit 0. If it did, it stops by calling self.stop.
+
+        """
         print("started _run")
         while self._going:
             s = default_timer()
@@ -76,13 +125,29 @@ class Timer:
 
     @staticmethod
     def _repr(time: int) -> str:
+        """Represent time in a readable format
+
+        Args:
+            time (int): The number of seconds
+
+        Returns:
+            str: The representation of the time
+
+        """
         minutes = time // 60
         seconds = time % 60
         return "{:02d}:{:02d}".format(minutes, seconds)
 
 
 class PlayerTimer(Timer):
+    """Special timer for players
 
+    It takes a player instance as an argument.
+    The only difference from the parent is that it updates the Tkinter text
+    variable in a different format and it only calls self._on_finish if
+    the player is suspended.
+
+    """
     def __init__(self, text_variable, on_finish, player, countdown: int = 60):
         super().__init__(text_variable, on_finish, countdown)
         self.player = player
@@ -110,7 +175,6 @@ class PlayerTimer(Timer):
             try:
                 if self.player.suspended:
                     self._on_finish(self.player)
-                    print(111)
             except TypeError:
                 pass
         else:

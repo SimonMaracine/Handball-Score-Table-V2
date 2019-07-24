@@ -51,25 +51,12 @@ class MainApplication:
         self.team1 = Team("The Team", 1)
         self.team2 = Team("Double Power", 2)
 
-        self.__players1 = (Player("Theodore", 16, self.team1, self.release_from_timer),
-                           Player("Simon", 17, self.team1, self.release_from_timer),
-                           Player("Jane", 18, self.team1, self.release_from_timer))
-
-        self.__players2 = (Player("Paul", 29, self.team2, self.release_from_timer),
-                           Player("Andrew", 64, self.team2, self.release_from_timer))
-
-        for player in self.__players1:
-            self.team1.add_player(player)
-        for player in self.__players2:
-            self.team2.add_player(player)
-
-        print(self.team1.players)
-        print(self.team2.players)
-
-        self.team1.sort_players()
-        self.team2.sort_players()
-        print(self.team1.players)
-        print(self.team2.players)
+        # self.__players1 = (Player("Theodore", 16, self.team1, self.release_from_timer),
+        #                    Player("Simon", 17, self.team1, self.release_from_timer),
+        #                    Player("Jane", 18, self.team1, self.release_from_timer))
+        #
+        # self.__players2 = (Player("Paul", 29, self.team2, self.release_from_timer),
+        #                    Player("Andrew", 64, self.team2, self.release_from_timer))
 
         self.__selected_player = None
         self.suspended_players1 = []
@@ -96,15 +83,13 @@ class MainApplication:
         tk.Label(team1_score, textvariable=self.score_team1_var, font="Times, 34").pack(padx=24, pady=10)
 
         team1_players = tk.Frame(container1, borderwidth=3, relief="sunken")
-        players1_list = tk.Listbox(team1_players, font="Times, 15", height=17)
-        players1_list.bind("<<ListboxSelect>>", self.list_box_select)
-        for i, player in enumerate(self.team1.players):
-            players1_list.insert(i, "{} [{}]".format(player.name, player.number))
+        self.players1_list = tk.Listbox(team1_players, font="Times, 15", height=17)
+        self.players1_list.bind("<<ListboxSelect>>", self.list_box_select)
 
         self.team1_suspended = tk.Frame(container1, borderwidth=5, relief="sunken", width=185, height=420)
         self.team1_suspended.pack_propagate(False)
 
-        players1_list.pack(padx=2, pady=2)
+        self.players1_list.pack(padx=2, pady=2)
         team1_score.grid(column=0, row=0)
 
         team1_name.grid(column=0, row=0)
@@ -132,15 +117,13 @@ class MainApplication:
         tk.Label(team2_score, textvariable=self.score_team2_var, font="Times, 34").pack(padx=24, pady=10)
 
         team2_players = tk.Frame(container1, borderwidth=3, relief="sunken")
-        players2_list = tk.Listbox(team2_players, font="Times, 15", height=17)
-        players2_list.bind("<<ListboxSelect>>", self.list_box_select)
-        for i, player in enumerate(self.team2.players):
-            players2_list.insert(i, "{} [{}]".format(player.name, player.number))
+        self.players2_list = tk.Listbox(team2_players, font="Times, 15", height=17)
+        self.players2_list.bind("<<ListboxSelect>>", self.list_box_select)
 
         self.team2_suspended = tk.Frame(container1, borderwidth=5, relief="sunken", width=185, height=420)
         self.team2_suspended.pack_propagate(False)
 
-        players2_list.pack(padx=2, pady=2)
+        self.players2_list.pack(padx=2, pady=2)
         team2_score.grid(column=1, row=0)
 
         team2_name.grid(column=3, row=0)
@@ -207,21 +190,21 @@ class MainApplication:
         tk.Label(container2, textvariable=self.selected_scores_var).grid(column=0, row=1)
         tk.Label(container2, textvariable=self.selected_cards_var).grid(column=1, row=1)
         tk.Button(container2, text="Score up",
-                  command=self.score_up).grid(column=0, row=2, columnspan=1)
+                  command=self.score_up).grid(column=0, row=2, columnspan=1, sticky=tk.W)
         tk.Button(container2, text="Score down",
-                  command=self.score_down).grid(column=0, row=3, columnspan=1)
+                  command=self.score_down).grid(column=0, row=3, columnspan=1, sticky=tk.W)
         tk.Button(container2, text="Suspend",
-                  command=self.suspend).grid(column=1, row=2, columnspan=1)
+                  command=self.suspend).grid(column=1, row=2, columnspan=1, sticky=tk.E)
         tk.Button(container2, text="Release",
-                  command=self.release).grid(column=1, row=3, columnspan=1)
+                  command=self.release).grid(column=1, row=3, columnspan=1, sticky=tk.E)
         tk.Button(container2, text="+ Yellow card",
-                  command=lambda: self.give_card("yellow")).grid(column=0, row=4, columnspan=1)
+                  command=lambda: self.give_card("yellow")).grid(column=0, row=4, columnspan=1, sticky=tk.W)
         tk.Button(container2, text="- Yellow card",
-                  command=lambda: self.take_card("yellow")).grid(column=0, row=5, columnspan=1)
+                  command=lambda: self.take_card("yellow")).grid(column=0, row=5, columnspan=1, sticky=tk.W)
         tk.Button(container2, text="+ Red card",
-                  command=lambda: self.give_card("red")).grid(column=1, row=4, columnspan=1)
+                  command=lambda: self.give_card("red")).grid(column=1, row=4, columnspan=1, sticky=tk.E)
         tk.Button(container2, text="- Red card",
-                  command=lambda: self.take_card("red")).grid(column=1, row=5, columnspan=1)
+                  command=lambda: self.take_card("red")).grid(column=1, row=5, columnspan=1, sticky=tk.E)
         tk.Button(container2, text="Disqualify",
                   command=None).grid(column=0, row=6, columnspan=2)
 
@@ -256,7 +239,7 @@ class MainApplication:
         self.__selected_player.score_up()
         self.selected_scores_var.set("Score: " + str(self.__selected_player.scores))
         self.__selected_player.text_var.set("{} [{}]    {}".format(self.__selected_player.name, self.__selected_player.number,
-                                                                  self.__selected_player.scores))
+                                                                   self.__selected_player.scores))
         if self.__selected_player.team.order == 1:
             self.score_team1_var.set(self.__selected_player.team.score)
         else:
@@ -266,7 +249,7 @@ class MainApplication:
         self.__selected_player.score_down()
         self.selected_scores_var.set("Score: " + str(self.__selected_player.scores))
         self.__selected_player.text_var.set("{} [{}]    {}".format(self.__selected_player.name, self.__selected_player.number,
-                                                                  self.__selected_player.scores))
+                                                                   self.__selected_player.scores))
         if self.__selected_player.team.order == 1:
             self.score_team1_var.set(self.__selected_player.team.score)
         else:
@@ -278,7 +261,7 @@ class MainApplication:
                                     "{} yellow, ".format(self.__selected_player.yellow_cards) +
                                     "{} red".format(self.__selected_player.red_cards))
         self.__selected_player.text_var.set("{} [{}]    {}".format(self.__selected_player.name, self.__selected_player.number,
-                                                                  self.__selected_player.scores))
+                                                                   self.__selected_player.scores))
 
     def take_card(self, color: str):
         self.__selected_player.take_card(color)
@@ -286,7 +269,7 @@ class MainApplication:
                                     "{} yellow, ".format(self.__selected_player.yellow_cards) +
                                     "{} red".format(self.__selected_player.red_cards))
         self.__selected_player.text_var.set("{} [{}]    {}".format(self.__selected_player.name, self.__selected_player.number,
-                                                                  self.__selected_player.scores))
+                                                                   self.__selected_player.scores))
 
     def suspend(self):
         if self.__selected_player.can_suspend():
@@ -413,6 +396,46 @@ class MainApplication:
                 if player.suspended:
                     player.timer.pause()
 
+    def apply_init_config(self, config):
+        # Reset some things
+        self.stop()
+        self.players1_list.delete(0, tk.END)
+        self.players2_list.delete(0, tk.END)
+        self.score_team1_var.set("0")
+        self.score_team2_var.set("0")
+        self.round_num_var.set("0")
+        # self.__selected_player = None
+
+        # Init teams
+        self.team1 = Team(config.team1, 1)
+        self.team2 = Team(config.team2, 2)
+
+        # Init players
+        players1 = []
+        players2 = []
+        for name, number in zip(config.players1, config.numbers1):
+            players1.append(Player(name, int(number), self.team1, self.release_from_timer))
+        for name, number in zip(config.players2, config.numbers2):
+            players2.append(Player(name, int(number), self.team2, self.release_from_timer))
+
+        self.team1.players = players1
+        self.team1.sort_players()
+        for i, player in enumerate(self.team1.players):
+            self.players1_list.insert(i, "{} [{}]".format(player.name, player.number))
+        self.team2.players = players2
+        self.team2.sort_players()
+        for i, player in enumerate(self.team2.players):
+            self.players2_list.insert(i, "{} [{}]".format(player.name, player.number))
+
+        # Init main timer
+        self.timer = Timer(self.time_var, None, int(config.match))
+        self.time_var.set(self.timer.get_time())
+
+        # Init timeout and suspend timers
+        self.time_out_timer = Timer(self.time_out_var, lambda: self.back_to_game(), int(config.timeout))
+        self.time_out_var.set(self.time_out_timer.get_time())
+        # todo init suspend timers
+
     def open_spectator_window(self):
         window = tk.Toplevel()
         SpectatorWindow(window, players1=self.team1.players, players2=self.team2.players, time_var=self.time_var,
@@ -422,7 +445,7 @@ class MainApplication:
 
     def open_init_window(self):
         window = tk.Toplevel()
-        InitWindow(window)
+        InitWindow(window, self.apply_init_config)
 
     def close_spectator_window(self):
         pass

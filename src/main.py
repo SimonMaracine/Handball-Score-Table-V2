@@ -86,7 +86,7 @@ class MainApplication:
         self.players1_list = tk.Listbox(team1_players, font="Times, 15", height=17)
         self.players1_list.bind("<<ListboxSelect>>", self.list_box_select)
 
-        self.team1_suspended = tk.Frame(container1, borderwidth=5, relief="sunken", width=185, height=420)
+        self.team1_suspended = tk.Frame(container1, borderwidth=5, relief="sunken", width=165, height=420)
         self.team1_suspended.pack_propagate(False)
 
         self.players1_list.pack(padx=2, pady=2)
@@ -120,7 +120,7 @@ class MainApplication:
         self.players2_list = tk.Listbox(team2_players, font="Times, 15", height=17)
         self.players2_list.bind("<<ListboxSelect>>", self.list_box_select)
 
-        self.team2_suspended = tk.Frame(container1, borderwidth=5, relief="sunken", width=185, height=420)
+        self.team2_suspended = tk.Frame(container1, borderwidth=5, relief="sunken", width=165, height=420)
         self.team2_suspended.pack_propagate(False)
 
         self.players2_list.pack(padx=2, pady=2)
@@ -134,7 +134,7 @@ class MainApplication:
         # Main timer
         ###########################################################################################
         self.time_var = tk.StringVar(self.content, value="00:00")
-        self.timer = Timer(self.time_var, None, 3600)
+        self.timer = Timer(self.time_var, None, 1200)
         self.time_var.set(self.timer.get_time())
 
         main_timer = tk.Frame(self.content, borderwidth=5, relief="sunken")

@@ -145,7 +145,7 @@ class PlayerTimer(Timer):
     It takes a player instance as an argument.
     The only difference from the parent is that it updates the Tkinter text
     variable in a different format, it only calls self._on_finish if
-    the player is suspended and it doesn't reset the time.
+    the player is suspended and it resets the time differently.
 
     """
     def __init__(self, text_variable, on_finish, player, countdown: int = 60):
@@ -169,7 +169,7 @@ class PlayerTimer(Timer):
         if self._going or self._paused:
             self._going = False
             self._paused = False
-            self._text_variable.set("{} | {}".format(self.player.number, Timer._repr(self._time)))
+            self._text_variable.set("{} | 00:00".format(self.player.number))
             print("Stopped timer")
             try:
                 if self.player.suspended:

@@ -15,8 +15,14 @@ class MainApplication:
         self.root.minsize(width=1235, height=630)
         menu_bar = tk.Menu()
         self.root.config(menu=menu_bar)
-        self.content = tk.Frame(self.root)
-        self.content.pack(side="top", fill="both", expand=True, padx=10, pady=10)
+        self.content = tk.Frame(self.root, padx=10, pady=10)
+        self.content.grid(column=0, row=0, sticky=(tk.E, tk.W))
+
+        self.content.columnconfigure(0, weight=2)
+        self.content.columnconfigure(1, weight=2)
+        # self.content.rowconfigure(0, weight=1)
+        self.root.columnconfigure(0, weight=1)
+        self.root.rowconfigure(0, weight=1)
 
         # File menu
         ###########################################################################################
@@ -35,16 +41,22 @@ class MainApplication:
         # Help menu
         ###########################################################################################
         help_menu = tk.Menu(menu_bar)
-        help_menu.add_command(label="About", command=self.say_hello)
+        help_menu.add_command(label="About", command=self.say_hello, state="disabled")
         menu_bar.add_cascade(label="Help", menu=help_menu)
 
         # Containers
         ###########################################################################################
         container1 = tk.Frame(self.content)  # players, suspended, scores
-        container2 = tk.Frame(self.content, borderwidth=2, relief="sunken", pady=6, padx=4)  # menu for players
+        container3 = tk.Frame(self.content)  # right side
+        container2 = tk.Frame(container3, borderwidth=2, relief="sunken", pady=6, padx=4)  # menu for players
 
         container1.grid(column=0, row=0, rowspan=3)
-        container2.grid(column=1, row=2)
+        container2.grid(column=0, row=2)
+        container3.grid(column=1, row=1, sticky=(tk.N, tk.S))
+
+        container3.rowconfigure(0, weight=3)
+        container3.rowconfigure(1, weight=3)
+        container3.rowconfigure(2, weight=3)
 
         # Init teams and players
         ###########################################################################################
@@ -133,30 +145,30 @@ class MainApplication:
 
         # Main timer
         ###########################################################################################
-        self.time_var = tk.StringVar(self.content, value="00:00")
+        self.time_var = tk.StringVar(container3, value="00:00")
         self.timer = Timer(self.time_var, None, 1200)
         self.time_var.set(self.timer.get_time())
 
-        main_timer = tk.Frame(self.content, borderwidth=5, relief="sunken")
+        main_timer = tk.Frame(container3, borderwidth=5, relief="sunken")
         self.timer_text = tk.Label(main_timer, textvariable=self.time_var, font="Times, 71")
         self.timer_text.grid(column=0, row=0, columnspan=3)
 
-        main_timer.grid(column=1, row=0)
+        main_timer.grid(column=0, row=0, columnspan=2)
 
         # Match round
         ###########################################################################################
-        match = tk.Frame(self.content)
+        match = tk.Frame(container3)
         match_round = tk.Frame(match, borderwidth=5, relief="sunken")
-        self.round_num_var = tk.IntVar(self.content, value=1)
+        self.round_num_var = tk.IntVar(container3, value=1)
         tk.Label(match_round, textvariable=self.round_num_var, font="Times, 50").pack(padx=30, pady=5)
 
         match_round.grid(column=0, row=0, rowspan=2)
 
-        match.grid(column=1, row=1)
+        match.grid(column=0, row=1)
 
         # Time-out timer
         ###########################################################################################
-        self.time_out_var = tk.StringVar(self.content, value="00:00")
+        self.time_out_var = tk.StringVar(container3, value="00:00")
         self.time_out_timer = Timer(self.time_out_var, lambda: self.back_to_game(), 60)
         self.time_out_var.set(self.time_out_timer.get_time())
 
@@ -217,7 +229,10 @@ class MainApplication:
 
     def list_box_select(self, event):
         widget = event.widget
-        player_name_number: str = widget.get(int(widget.curselection()[0]))
+        try:
+            player_name_number: str = widget.get(int(widget.curselection()[0]))
+        except IndexError:
+            return
         # print(player_name_number)
 
         selected_player = None
@@ -403,7 +418,7 @@ class MainApplication:
         self.players2_list.delete(0, tk.END)
         self.score_team1_var.set("0")
         self.score_team2_var.set("0")
-        self.round_num_var.set("0")
+        self.round_num_var.set("1")
         # self.__selected_player = None
 
         # Init teams

@@ -1,4 +1,7 @@
+import json
 import tkinter as tk
+from typing import List
+
 from src.config_object import Config
 
 
@@ -7,7 +10,7 @@ class InitWindow:
     def __init__(self, top_level: tk.Toplevel, on_apply, **kwargs):
         self.top_level = top_level
         self.on_apply = on_apply
-        self.top_level.minsize(width=900, height=640)
+        self.top_level.minsize(width=660, height=420)
         self.content = tk.Frame(self.top_level)
         self.content.pack(side="top", fill="both", expand=True, padx=10, pady=10)
         for key, value in kwargs.items():
@@ -17,11 +20,11 @@ class InitWindow:
         ###########################################################################################
         player_entries = tk.Frame(self.content)
         config_entries = tk.Frame(self.content)
-        button = tk.Frame(self.content)
+        buttons = tk.Frame(self.content)
 
-        player_entries.grid(column=0, row=0)
+        player_entries.grid(column=0, row=0, rowspan=2)
         config_entries.grid(column=1, row=0)
-        button.grid(column=2, row=0)
+        buttons.grid(column=1, row=1)
 
         # Player entries
         ###########################################################################################
@@ -58,10 +61,10 @@ class InitWindow:
 
         # Player labels
         ###########################################################################################
-        tk.Label(player_entries, text="Team 1")
+        tk.Label(player_entries, text="Team 1").grid(column=0, row=0)
         for i in range(1, 17):
             tk.Label(player_entries, text=f"{i}").grid(column=0, row=i)
-        tk.Label(player_entries, text="Team 2")
+        tk.Label(player_entries, text="Team 2").grid(column=3, row=0)
         for i in range(1, 17):
             tk.Label(player_entries, text=f"{i}").grid(column=3, row=i)
 
@@ -85,8 +88,10 @@ class InitWindow:
 
         # Buttons
         ###########################################################################################
-        tk.Button(button, text="Apply", command=self.apply_new_configuration).pack()
-        tk.Button(button, text="Discard", command=self.top_level.destroy).pack()
+        tk.Button(buttons, text="Apply", command=self.apply_new_configuration).pack()
+        tk.Button(buttons, text="Discard", command=self.top_level.destroy).pack()
+        tk.Button(buttons, text="Load config",
+                  command=lambda: self.load_configuration("data/configs/last_config.json")).pack()
 
     def apply_new_configuration(self):
         players1_entries = tuple(filter(lambda entry: entry.get(), self.team1_players))
@@ -120,3 +125,48 @@ class InitWindow:
 
         self.on_apply(Config(team1, team2, players1, players2, nums1, nums2, match, timeout, suspend))
         self.top_level.destroy()
+
+    def load_configuration(self, json_file: str):
+        with open(json_file, "r") as file:
+            config_raw = file.read()
+            config: dict = json.loads(config_raw)
+
+        # Get those values
+        team1_object: dict = config["teams"][0]
+        team2_object: dict = config["teams"][1]
+        players1_list: List[dict] = team1_object["players"]
+        players2_list: List[dict] = team2_object["players"]
+
+        team1: str = team1_object["name"]
+        team2: str = team2_object["name"]
+        players1: List[str] = list(map(lambda player: player["name"], players1_list))
+        players2: List[str] = list(map(lambda player: player["name"], players2_list))
+        nums1: List[str] = list(map(lambda player: f'{player["number"]:02d}', players1_list))
+        nums2: List[str] = list(map(lambda player: f'{player["number"]:02d}', players2_list))
+        match = f'{config["match"]:02d}'
+        timeout = f'{config["timeout"]:02d}'
+        suspend = f'{config["suspend"]:02d}'
+
+        # Erase everything first
+        self.team1.delete(0, tk.END)
+        self.team2.delete(0, tk.END)
+        for entry in self.team1_players + self.team2_players + self.players1_nums + self.players2_nums:
+            entry.delete(0, tk.END)
+        self.match.delete(0, tk.END)
+        self.timeout.delete(0, tk.END)
+        self.suspend.delete(0, tk.END)
+
+        # Insert from config file
+        self.team1.insert(0, team1)
+        self.team2.insert(0, team2)
+        for entry, insert in zip(self.team1_players, players1):
+            entry.insert(0, insert)
+        for entry, insert in zip(self.team2_players, players2):
+            entry.insert(0, insert)
+        for entry, insert in zip(self.players1_nums, nums1):
+            entry.insert(0, insert)
+        for entry, insert in zip(self.players2_nums, nums2):
+            entry.insert(0, insert)
+        self.match.insert(0, match)
+        self.timeout.insert(0, timeout)
+        self.suspend.insert(0, suspend)

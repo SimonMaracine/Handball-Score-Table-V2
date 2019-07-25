@@ -48,8 +48,8 @@ class MainApplication:
 
         # Init teams and players
         ###########################################################################################
-        self.team1 = Team("The Team", 1)
-        self.team2 = Team("Double Power", 2)
+        self.team1 = Team("Home", 1)
+        self.team2 = Team("Guest", 2)
 
         # self.__players1 = (Player("Theodore", 16, self.team1, self.release_from_timer),
         #                    Player("Simon", 17, self.team1, self.release_from_timer),
@@ -409,6 +409,8 @@ class MainApplication:
         # Init teams
         self.team1 = Team(config.team1, 1)
         self.team2 = Team(config.team2, 2)
+        self.name_team1_var.set(self.team1.name)
+        self.name_team2_var.set(self.team2.name)
 
         # Init players
         players1 = []

@@ -1,5 +1,9 @@
 .idea/
 __pycache__/
+build/
+dist/
 *.pyc
 !custom.json
 *.json
+*.spec
+Handball-Score-Table-V2

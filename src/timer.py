@@ -108,17 +108,19 @@ class Timer:
         and checks if the time hit 0. If it did, it stops by calling self.stop.
 
         """
-        print("started _run")
+        # print("started _run")
         while self._going:
             s = default_timer()
+            start = default_timer()
             self._tick()
             self._text_variable.set(Timer._repr(self._time))
             if self._time <= 0:
                 self.stop()
-            sleep(0.999)
+            stop = default_timer()
+            sleep(0.999 - (stop - start))
             f = default_timer()
             print(f - s)
-        print("finished _run")
+        # print("finished _run")
 
     def _tick(self):
         self._time -= 1
@@ -153,17 +155,19 @@ class PlayerTimer(Timer):
         self.player = player
 
     def _run(self):
-        print("started _run")
+        # print("started _run")
         while self._going:
             s = default_timer()
+            start = default_timer()
             self._tick()
             self._text_variable.set("{} | {}".format(self.player.number, Timer._repr(self._time)))
             if self._time <= 0:
                 self.stop()
-            sleep(0.999)
+            stop = default_timer()
+            sleep(1 - (stop - start))
             f = default_timer()
             print(f - s)
-        print("finished _run")
+        # print("finished _run")
 
     def stop(self):
         if self._going or self._paused:

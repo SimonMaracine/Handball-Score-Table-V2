@@ -196,7 +196,7 @@ class MainApplication:
         ###########################################################################################
         self.player_selected_var = tk.StringVar(container2, value="Player selected: None")
         self.selected_scores_var = tk.StringVar(container2, value="Score: n/a")
-        self.selected_cards_var = tk.StringVar(container2, value="Cards: None")
+        self.selected_cards_var = tk.StringVar(container2, value="Cards: n/a")
 
         tk.Label(container2, textvariable=self.player_selected_var).grid(column=0, row=0, columnspan=2)
         tk.Label(container2, textvariable=self.selected_scores_var).grid(column=0, row=1)
@@ -251,6 +251,8 @@ class MainApplication:
                                     "{} red".format(self.__selected_player.red_cards))
 
     def score_up(self):
+        if self.__selected_player is None:
+            return
         self.__selected_player.score_up()
         self.selected_scores_var.set("Score: " + str(self.__selected_player.scores))
         self.__selected_player.text_var.set("{} [{}]    {}".format(self.__selected_player.name, self.__selected_player.number,
@@ -261,6 +263,8 @@ class MainApplication:
             self.score_team2_var.set(self.__selected_player.team.score)
 
     def score_down(self):
+        if self.__selected_player is None:
+            return
         self.__selected_player.score_down()
         self.selected_scores_var.set("Score: " + str(self.__selected_player.scores))
         self.__selected_player.text_var.set("{} [{}]    {}".format(self.__selected_player.name, self.__selected_player.number,
@@ -271,6 +275,8 @@ class MainApplication:
             self.score_team2_var.set(self.__selected_player.team.score)
 
     def give_card(self, color: str):
+        if self.__selected_player is None:
+            return
         self.__selected_player.give_card(color)
         self.selected_cards_var.set("Cards: " +
                                     "{} yellow, ".format(self.__selected_player.yellow_cards) +
@@ -279,6 +285,8 @@ class MainApplication:
                                                                    self.__selected_player.scores))
 
     def take_card(self, color: str):
+        if self.__selected_player is None:
+            return
         self.__selected_player.take_card(color)
         self.selected_cards_var.set("Cards: " +
                                     "{} yellow, ".format(self.__selected_player.yellow_cards) +
@@ -287,6 +295,8 @@ class MainApplication:
                                                                    self.__selected_player.scores))
 
     def suspend(self):
+        if self.__selected_player is None:
+            return
         if self.__selected_player.can_suspend():
             if not self.timer.get_going() or self.time_out_timer.get_going():
                 self.__selected_player.suspend(False)
@@ -305,6 +315,8 @@ class MainApplication:
             suspended.pack(padx=10, pady=0)
 
     def release(self):
+        if self.__selected_player is None:
+            return
         if self.__selected_player.can_release():
             if self.__selected_player.team.order == 1:
                 for suspended in self.suspended_players1:

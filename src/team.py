@@ -33,5 +33,5 @@ class Team:
         self.players.sort(key=lambda player: player.name)
 
     def request_time_out(self):
-        """Request time-out"""
+        """Increments the time_out_requests variable"""
         self.time_out_requests += 1

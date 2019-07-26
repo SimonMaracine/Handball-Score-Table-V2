@@ -15,9 +15,9 @@ class Player:
         self.yellow_cards = 0
         self.red_cards = 0
         self.timer = None
-        self.suspend_text_var = tk.StringVar(value="{} | 00:00".format(self.number))
-        self.timer_on_finish = timer_on_finish
-        self.text_var = tk.StringVar()
+        self._suspend_text_var = tk.StringVar(value="{} | 00:00".format(self.number))
+        self._timer_on_finish = timer_on_finish
+        self._text_var = tk.StringVar()
 
     def __repr__(self):
         return "Player {} [{}] - {}".format(self.name, self.number, self.team)
@@ -77,7 +77,7 @@ class Player:
 
         """
         if not self.suspended:
-            self.timer = PlayerTimer(self.suspend_text_var, self.timer_on_finish, self, 120)
+            self.timer = PlayerTimer(self._suspend_text_var, self._timer_on_finish, self, 120)
             if start:
                 self.timer.start()
             self.suspended = True

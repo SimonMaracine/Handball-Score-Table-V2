@@ -12,6 +12,7 @@ class SpectatorWindow:
         self.content.pack(expand=True, padx=int(6 * SCL), pady=int(6 * SCL))
         for key, value in kwargs.items():
             self.__setattr__(key, value)
+        self.to_give_back(spec_time_out=lambda: self.time_out(), spec_back_to_game=lambda: self.back_to_game())
 
         # Team 1
         ###########################################################################################
@@ -73,7 +74,8 @@ class SpectatorWindow:
         # Main timer
         ###########################################################################################
         main_timer = tk.Frame(self.content, borderwidth=int(4 * SCL), relief="sunken")
-        tk.Label(main_timer, textvariable=self.time_var, font=f"Times, {int(74 * SCL)}").pack(padx=int(16 * SCL), pady=int(4 * SCL))
+        self.timer_text = tk.Label(main_timer, textvariable=self.time_var, font=f"Times, {int(74 * SCL)}")
+        self.timer_text.grid(padx=int(16 * SCL), pady=int(4 * SCL))
 
         main_timer.grid(column=1, row=0, columnspan=2)
 
@@ -83,3 +85,18 @@ class SpectatorWindow:
         tk.Label(match_round, textvariable=self.round_num_var, font=f"Times, {int(53 * SCL)}").pack(padx=int(32 * SCL), pady=0)
 
         match_round.grid(column=1, row=1, columnspan=2)
+
+        # Timeout timer
+        ###########################################################################################
+        self.time_out_timer_text = tk.Label(main_timer, textvariable=self.time_out_var, font=f"Times, {int(74 * SCL)}",
+                                            foreground="darkred")
+        self.time_out_timer_text.grid(padx=int(16 * SCL), pady=int(4 * SCL))
+        self.time_out_timer_text.grid_remove()
+
+    def time_out(self):
+        self.timer_text.grid_remove()
+        self.time_out_timer_text.grid()
+
+    def back_to_game(self):
+        self.time_out_timer_text.grid_remove()
+        self.timer_text.grid()

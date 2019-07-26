@@ -166,13 +166,13 @@ class MainApplication:
 
         match.grid(column=0, row=1)
 
-        # Time-out timer
+        # Timeout timer
         ###########################################################################################
         self.time_out_var = tk.StringVar(container3, value="00:00")
         self.time_out_timer = Timer(self.time_out_var, lambda: self.back_to_game(), 60)
         self.time_out_var.set(self.time_out_timer.get_time())
 
-        self.time_out_timer_text = tk.Label(main_timer, textvariable=self.time_out_var, font="Times, 65")
+        self.time_out_timer_text = tk.Label(main_timer, textvariable=self.time_out_var, font="Times, 70", foreground="darkred")
         self.time_out_timer_text.grid(column=0, row=0, columnspan=3)
         self.time_out_timer_text.grid_remove()
 
@@ -377,7 +377,6 @@ class MainApplication:
             self.do_players_timers(1)
         else:
             self.time_out_timer.stop()
-            self.do_players_timers(1)
             self.back_to_game()
 
     def time_out(self, team: Team):
@@ -390,11 +389,19 @@ class MainApplication:
             self.time_out_timer.start()
             self.time_out_timer_text.grid()
             self.is_time_out = True
+            try:
+                self.spec_time_out()
+            except Exception:
+                pass
 
     def back_to_game(self):
         self.time_out_timer_text.grid_remove()
         self.timer_text.grid()
         self.is_time_out = False
+        try:
+            self.spec_back_to_game()
+        except Exception:
+            pass
         # print(0)
 
     def do_players_timers(self, todo=0):
@@ -458,14 +465,16 @@ class MainApplication:
         SpectatorWindow(window, players1=self.team1.players, players2=self.team2.players, time_var=self.time_var,
                         round_num_var=self.round_num_var, score_team1_var=self.score_team1_var,
                         score_team2_var=self.score_team2_var, name_team1_var=self.name_team1_var,
-                        name_team2_var=self.name_team2_var)
+                        name_team2_var=self.name_team2_var, time_out_var=self.time_out_var,
+                        to_give_back=self.take_from_window)
 
     def open_init_window(self):
         window = tk.Toplevel()
         InitWindow(window, self.apply_init_config)
 
-    def close_spectator_window(self):
-        pass
+    def take_from_window(self, **kwargs):
+        for key, value in kwargs.items():
+            self.__setattr__(key, value)
 
 
 def main():

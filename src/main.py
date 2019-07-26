@@ -12,10 +12,10 @@ class MainApplication:
     def __init__(self, root: tk.Tk):
         self.root = root
         self.root.option_add("*tearOff", False)
-        self.root.minsize(width=1235, height=630)
+        self.root.minsize(width=1000, height=620)
         menu_bar = tk.Menu()
         self.root.config(menu=menu_bar)
-        self.content = tk.Frame(self.root, padx=10, pady=10)
+        self.content = tk.Frame(self.root, padx=8, pady=8)
         self.content.grid(column=0, row=0, sticky=(tk.E, tk.W))
 
         self.content.columnconfigure(0, weight=2)
@@ -78,27 +78,27 @@ class MainApplication:
         # Team 1
         ###########################################################################################
         self.name_team1_var = tk.StringVar(container1, value=self.team1.name)
-        team1_name = tk.Frame(container1, borderwidth=5, relief="sunken")
-        if len(self.team2.name) >= 20:
-            size = 14
-        elif len(self.team2.name) >= 15:
-            size = 18
-        elif len(self.team2.name) >= 10:
-            size = 27
-        else:
-            size = 28
-        tk.Label(team1_name, textvariable=self.name_team1_var, font="Times, {}".format(size)).pack(padx=10, pady=25)
+        team1_name = tk.Frame(container1, borderwidth=4, relief="sunken")
+        # if len(self.team2.name) >= 20:
+        #     size = 14
+        # elif len(self.team2.name) >= 15:
+        #     size = 18
+        # elif len(self.team2.name) >= 10:
+        #     size = 27
+        # else:
+        size = 18
+        tk.Label(team1_name, textvariable=self.name_team1_var, font="Times, {}".format(size)).pack(padx=8, pady=22)
 
         score1 = tk.Frame(container1)
         team1_score = tk.Frame(score1, borderwidth=3, relief="sunken")
         self.score_team1_var = tk.IntVar(container1, value=0)
-        tk.Label(team1_score, textvariable=self.score_team1_var, font="Times, 34").pack(padx=24, pady=10)
+        tk.Label(team1_score, textvariable=self.score_team1_var, font="Times, 26").pack(padx=12, pady=4)
 
         team1_players = tk.Frame(container1, borderwidth=3, relief="sunken")
-        self.players1_list = tk.Listbox(team1_players, font="Times, 15", height=17)
+        self.players1_list = tk.Listbox(team1_players, font="Times, 12", height=18)
         self.players1_list.bind("<<ListboxSelect>>", self.list_box_select)
 
-        self.team1_suspended = tk.Frame(container1, borderwidth=5, relief="sunken", width=165, height=420)
+        self.team1_suspended = tk.Frame(container1, borderwidth=4, relief="sunken", width=130, height=380)
         self.team1_suspended.pack_propagate(False)
 
         self.players1_list.pack(padx=2, pady=2)
@@ -112,27 +112,27 @@ class MainApplication:
         # Team 2
         ###########################################################################################
         self.name_team2_var = tk.StringVar(container1, value=self.team2.name)
-        team2_name = tk.Frame(container1, borderwidth=5, relief="sunken")
-        if len(self.team2.name) >= 20:
-            size = 14
-        elif len(self.team2.name) >= 15:
-            size = 18
-        elif len(self.team2.name) >= 10:
-            size = 27
-        else:
-            size = 28
-        tk.Label(team2_name, textvariable=self.name_team2_var, font="Times, {}".format(size)).pack(padx=10, pady=25)
+        team2_name = tk.Frame(container1, borderwidth=4, relief="sunken")
+        # if len(self.team2.name) >= 20:
+        #     size = 14
+        # elif len(self.team2.name) >= 15:
+        #     size = 18
+        # elif len(self.team2.name) >= 10:
+        #     size = 27
+        # else:
+        size = 18
+        tk.Label(team2_name, textvariable=self.name_team2_var, font="Times, {}".format(size)).pack(padx=8, pady=22)
 
         score2 = tk.Frame(container1)
         team2_score = tk.Frame(score2, borderwidth=3, relief="sunken")
         self.score_team2_var = tk.IntVar(container1, value=0)
-        tk.Label(team2_score, textvariable=self.score_team2_var, font="Times, 34").pack(padx=24, pady=10)
+        tk.Label(team2_score, textvariable=self.score_team2_var, font="Times, 26").pack(padx=12, pady=4)
 
         team2_players = tk.Frame(container1, borderwidth=3, relief="sunken")
-        self.players2_list = tk.Listbox(team2_players, font="Times, 15", height=17)
+        self.players2_list = tk.Listbox(team2_players, font="Times, 12", height=18)
         self.players2_list.bind("<<ListboxSelect>>", self.list_box_select)
 
-        self.team2_suspended = tk.Frame(container1, borderwidth=5, relief="sunken", width=165, height=420)
+        self.team2_suspended = tk.Frame(container1, borderwidth=4, relief="sunken", width=130, height=380, padx=0, pady=0)
         self.team2_suspended.pack_propagate(False)
 
         self.players2_list.pack(padx=2, pady=2)
@@ -150,7 +150,7 @@ class MainApplication:
         self.time_var.set(self.timer.get_time())
 
         main_timer = tk.Frame(container3, borderwidth=5, relief="sunken")
-        self.timer_text = tk.Label(main_timer, textvariable=self.time_var, font="Times, 71")
+        self.timer_text = tk.Label(main_timer, textvariable=self.time_var, font="Times, 70")
         self.timer_text.grid(column=0, row=0, columnspan=3)
 
         main_timer.grid(column=0, row=0, columnspan=2)
@@ -295,14 +295,14 @@ class MainApplication:
 
             if self.__selected_player.team.order == 1:
                 suspended = tk.Label(self.team1_suspended, textvariable=self.__selected_player.suspend_text_var,
-                                     font="Times, 15")
+                                     font="Times, 12")
                 self.suspended_players1.append(suspended)
             else:
                 suspended = tk.Label(self.team2_suspended, textvariable=self.__selected_player.suspend_text_var,
-                                     font="Times, 15")
+                                     font="Times, 12")
                 self.suspended_players2.append(suspended)
 
-            suspended.pack(padx=26, pady=2)
+            suspended.pack(padx=10, pady=0)
 
     def release(self):
         if self.__selected_player.can_release():

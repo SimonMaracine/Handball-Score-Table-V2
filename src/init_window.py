@@ -117,8 +117,8 @@ class InitWindow:
                 len(tuple(filter(lambda num: num.isdigit() and len(num) == 2, nums2))) < len(nums2):
             print("Players' numbers must be numbers and must be two digits")
             return
-        if len(self.team1.get()) > 21 or len(self.team2.get()) > 21:
-            print("Teams' names must not exceed 21 characters")
+        if len(self.team1.get()) > 19 or len(self.team2.get()) > 19:
+            print("Teams' names must not exceed 19 characters")
             return
         for name in map(lambda entry: entry.get(), players1_entries + players2_entries):
             if len(name) > 14:
@@ -153,7 +153,7 @@ class InitWindow:
                 config_raw = file.read()
                 config: dict = json.loads(config_raw)
         except FileNotFoundError:
-            print(f"No configuration file {json_file} found")
+            print(f'No configuration file "{json_file}" found')
             return
 
         # Get those values

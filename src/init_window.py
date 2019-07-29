@@ -142,7 +142,7 @@ class InitWindow:
     def apply_new_configuration(self):
         try:
             team1, team2, players1, players2, nums1, nums2, match, timeout, suspend = self.get_current_entries()
-        except TypeError:
+        except TypeError:  # If returned prematurely, with an error
             return
         self.on_apply(Config(team1, team2, players1, players2, nums1, nums2, match, timeout, suspend))
         self.top_level.destroy()
@@ -218,7 +218,7 @@ class InitWindow:
         # Get config
         try:
             team1, team2, players1, players2, nums1, nums2, match, timeout, suspend = self.get_current_entries()
-        except TypeError:
+        except TypeError:  # If returned prematurely, with an error
             return
 
         config["teams"][0]["name"] = team1

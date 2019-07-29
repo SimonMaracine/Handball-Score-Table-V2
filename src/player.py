@@ -16,11 +16,11 @@ class Player:
         self.yellow_cards = 0
         self.red_cards = 0
         self.timer = None
-        self.suspend_text_var = tk.StringVar(value="{} | 00:00".format(self.number))
+        self.suspend_text_var = tk.StringVar(value="{:02d} | 00:00".format(self.number))
         self.text_var = tk.StringVar()
 
     def __repr__(self):
-        return "Player {} [{}] - {}".format(self.name, self.number, self.team)
+        return "Player {} [{:02d}] - {}".format(self.name, self.number, self.team)
 
     def score_up(self):
         """Increment player's scores and his/hers team's score"""

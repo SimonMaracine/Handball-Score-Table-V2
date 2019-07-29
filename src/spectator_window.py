@@ -59,7 +59,7 @@ class SpectatorWindow:
             suspended.grid(row=i, padx=int(24 * SCL), pady=0)
             # suspended.grid_remove()
 
-            player.text_var = tk.StringVar(team1_players, value="{} [{}]    {}".format(player.name, player.number, player.scores))
+            player.text_var = tk.StringVar(team1_players, value="{} [{:02d}]    {}".format(player.name, player.number, player.scores))
             tk.Label(team1_players, textvariable=player.text_var, font=f"Times, {int(13 * SCL)}").pack(padx=int(26 * SCL), pady=0)
 
         for i, player in enumerate(self.players2):
@@ -68,7 +68,7 @@ class SpectatorWindow:
             # suspended.grid_remove()
 
             player.text_var = tk.StringVar(team2_players,
-                                           value="{} [{}]    {}".format(player.name, player.number, player.scores))
+                                           value="{} [{:02d}]    {}".format(player.name, player.number, player.scores))
             tk.Label(team2_players, textvariable=player.text_var, font=f"Times, {int(13 * SCL)}").pack(padx=int(26 * SCL), pady=0)
 
         # Main timer

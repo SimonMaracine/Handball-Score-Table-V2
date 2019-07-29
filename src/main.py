@@ -237,7 +237,7 @@ class MainApplication:
 
         selected_player = None
         for player in self.team1.players + self.team2.players:
-            if player_name_number == "{} [{}]".format(player.name, player.number):
+            if player_name_number == "{} [{:02d}]".format(player.name, player.number):
                 selected_player = player
 
         assert selected_player is not None, "Could not find player " + player_name_number
@@ -255,8 +255,8 @@ class MainApplication:
             return
         self.__selected_player.score_up()
         self.selected_scores_var.set("Score: " + str(self.__selected_player.scores))
-        self.__selected_player.text_var.set("{} [{}]    {}".format(self.__selected_player.name, self.__selected_player.number,
-                                                                   self.__selected_player.scores))
+        self.__selected_player.text_var.set("{} [{:02d}]    {}".format(self.__selected_player.name, self.__selected_player.number,
+                                                                       self.__selected_player.scores))
         if self.__selected_player.team.order == 1:
             self.score_team1_var.set(self.__selected_player.team.score)
         else:
@@ -267,8 +267,8 @@ class MainApplication:
             return
         self.__selected_player.score_down()
         self.selected_scores_var.set("Score: " + str(self.__selected_player.scores))
-        self.__selected_player.text_var.set("{} [{}]    {}".format(self.__selected_player.name, self.__selected_player.number,
-                                                                   self.__selected_player.scores))
+        self.__selected_player.text_var.set("{} [{:02d}]    {}".format(self.__selected_player.name, self.__selected_player.number,
+                                                                       self.__selected_player.scores))
         if self.__selected_player.team.order == 1:
             self.score_team1_var.set(self.__selected_player.team.score)
         else:
@@ -281,8 +281,8 @@ class MainApplication:
         self.selected_cards_var.set("Cards: " +
                                     "{} yellow, ".format(self.__selected_player.yellow_cards) +
                                     "{} red".format(self.__selected_player.red_cards))
-        self.__selected_player.text_var.set("{} [{}]    {}".format(self.__selected_player.name, self.__selected_player.number,
-                                                                   self.__selected_player.scores))
+        self.__selected_player.text_var.set("{} [{:02d}]    {}".format(self.__selected_player.name, self.__selected_player.number,
+                                                                       self.__selected_player.scores))
 
     def take_card(self, color: str):
         if self.__selected_player is None:
@@ -291,15 +291,15 @@ class MainApplication:
         self.selected_cards_var.set("Cards: " +
                                     "{} yellow, ".format(self.__selected_player.yellow_cards) +
                                     "{} red".format(self.__selected_player.red_cards))
-        self.__selected_player.text_var.set("{} [{}]    {}".format(self.__selected_player.name, self.__selected_player.number,
-                                                                   self.__selected_player.scores))
+        self.__selected_player.text_var.set("{} [{:02d}]    {}".format(self.__selected_player.name, self.__selected_player.number,
+                                                                       self.__selected_player.scores))
 
     def suspend(self):
         if self.__selected_player is None:
             return
         if self.__selected_player.can_suspend():
             if not self.timer.get_going() or self.time_out_timer.get_going():
-                self.__selected_player.suspend(False)
+                self.__selected_player.suspend(start=False)
             else:
                 self.__selected_player.suspend()
 
@@ -457,11 +457,11 @@ class MainApplication:
         self.team1.players = players1
         self.team1.sort_players()
         for i, player in enumerate(self.team1.players):
-            self.players1_list.insert(i, "{} [{}]".format(player.name, player.number))
+            self.players1_list.insert(i, "{} [{:02d}]".format(player.name, player.number))
         self.team2.players = players2
         self.team2.sort_players()
         for i, player in enumerate(self.team2.players):
-            self.players2_list.insert(i, "{} [{}]".format(player.name, player.number))
+            self.players2_list.insert(i, "{} [{:02d}]".format(player.name, player.number))
 
         # Init main timer
         self.timer = Timer(self.time_var, None, int(config.match))

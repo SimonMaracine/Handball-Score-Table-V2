@@ -160,7 +160,7 @@ class PlayerTimer(Timer):
             s = default_timer()
             start = default_timer()
             self._tick()
-            self._text_variable.set("{} | {}".format(self.player.number, Timer._repr(self._time)))
+            self._text_variable.set("{:02d} | {}".format(self.player.number, Timer._repr(self._time)))
             if self._time <= 0:
                 self.stop()
             stop = default_timer()
@@ -173,7 +173,7 @@ class PlayerTimer(Timer):
         if self._going or self._paused:
             self._going = False
             self._paused = False
-            self._text_variable.set("{} | 00:00".format(self.player.number))
+            self._text_variable.set("{:02d} | 00:00".format(self.player.number))
             print("Stopped timer")
             try:
                 if self.player.suspended:

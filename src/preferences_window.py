@@ -3,6 +3,11 @@ import tkinter as tk
 from os.path import join
 
 
+def create_settings_file():
+    with open(join("data", "settings.json"), "w") as file:
+        file.write('{"spectator_scale": 1.0}')
+
+
 class PreferencesWindow:
 
     def __init__(self, top_level: tk.Toplevel):
@@ -28,18 +33,19 @@ class PreferencesWindow:
                 scale = settings["spectator_scale"]
         except FileNotFoundError:
             print("No settings file found")
+            create_settings_file()
             scale = 1.0
 
         self.scale = tk.StringVar(container1, value=scale)
-        spectator_scale = tk.Spinbox(container1, from_=0.8, to=3.0, increment=0.2, textvariable=self.scale, width=4)
+        spectator_scale = tk.Spinbox(container1, from_=0.8, to=2.4, increment=0.2, textvariable=self.scale, width=4)
         spectator_scale.grid(column=1, row=0)
 
         tk.Label(container1, text="Spectator window scale").grid(column=0, row=0)
 
         # Buttons
         ###########################################################################################
-        tk.Button(container2, text="Save", command=self.save_preferences).grid(column=0, row=0)
-        tk.Button(container2, text="Cancel", command=self.top_level.destroy).grid(column=1, row=0)
+        tk.Button(container2, text="Save", command=self.save_preferences).grid(column=0, row=0, padx=5)
+        tk.Button(container2, text="Cancel", command=self.top_level.destroy).grid(column=1, row=0, padx=5)
 
     def save_preferences(self):
         config = {

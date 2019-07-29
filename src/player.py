@@ -4,6 +4,7 @@ from src.timer import PlayerTimer
 
 class Player:
     """Class representing a player"""
+    SUS_TIME = 120
 
     def __init__(self, name: str, number: int, team, timer_on_finish):
         self.name = name
@@ -77,7 +78,7 @@ class Player:
 
         """
         if not self.suspended:
-            self.timer = PlayerTimer(self.suspend_text_var, self._timer_on_finish, self, 120)
+            self.timer = PlayerTimer(self.suspend_text_var, self._timer_on_finish, self, Player.SUS_TIME)
             if start:
                 self.timer.start()
             self.suspended = True

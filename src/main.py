@@ -13,7 +13,7 @@ class MainApplication:
     def __init__(self, root: tk.Tk):
         self.root = root
         self.root.option_add("*tearOff", False)
-        self.root.minsize(width=1000, height=620)
+        self.root.minsize(width=1000, height=560)
         menu_bar = tk.Menu()
         self.root.config(menu=menu_bar)
         self.content = tk.Frame(self.root, padx=8, pady=8)
@@ -37,6 +37,7 @@ class MainApplication:
         ###########################################################################################
         edit_menu = tk.Menu(menu_bar)
         edit_menu.add_command(label="Preferences", command=self.open_preferences_window)
+        # edit_menu.add_command(label="Add player", command=None, state="disabled")
         menu_bar.add_cascade(label="Edit", menu=edit_menu)
 
         # Help menu
@@ -447,6 +448,9 @@ class MainApplication:
         self.name_team1_var.set(self.team1.name)
         self.name_team2_var.set(self.team2.name)
 
+        # Init suspend timers before init players
+        Player.SUS_TIME = int(config.suspend)
+
         # Init players
         players1 = []
         players2 = []
@@ -468,10 +472,12 @@ class MainApplication:
         self.timer = Timer(self.time_var, None, int(config.match))
         self.time_var.set(self.timer.get_time())
 
-        # Init timeout and suspend timers
+        # Init timeout timers
         self.time_out_timer = Timer(self.time_out_var, lambda: self.back_to_game(), int(config.timeout))
         self.time_out_var.set(self.time_out_timer.get_time())
-        # todo init suspend timers
+
+    # def add_another_player(self):
+    #     pass
 
     def open_spectator_window(self):
         window = tk.Toplevel()

@@ -4,6 +4,7 @@ build/
 dist/
 *.pyc
 !custom.json
+!settings.json
 *.json
 *.spec
 Handball-Score-Table-V2

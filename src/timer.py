@@ -2,6 +2,9 @@ import threading
 from time import sleep
 from timeit import default_timer
 
+# wave_obj = simpleaudio.WaveObject.from_wave_file("sounds/sound.wav") todo implement sound
+# sound = wave_obj.play()
+
 
 class Timer:
     """Class used to create timer objects for the round itself and for players"""

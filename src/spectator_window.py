@@ -2,6 +2,8 @@ import json
 import tkinter as tk
 from os.path import join
 
+from preferences_window import create_settings_file
+
 SCL = float
 
 
@@ -16,6 +18,7 @@ class SpectatorWindow:
                 SCL = settings["spectator_scale"]
         except FileNotFoundError:
             print("No settings file found")
+            create_settings_file()
             SCL = 1.0
 
         self.top_level = top_level

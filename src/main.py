@@ -3,6 +3,7 @@ import tkinter as tk
 from src.timer import Timer
 from src.spectator_window import SpectatorWindow
 from src.init_window import InitWindow
+from src.preferences_window import PreferencesWindow
 from src.player import Player
 from src.team import Team
 
@@ -35,7 +36,7 @@ class MainApplication:
         # Edit menu
         ###########################################################################################
         edit_menu = tk.Menu(menu_bar)
-        edit_menu.add_command(label="Preferences", state="disabled")
+        edit_menu.add_command(label="Preferences", command=self.open_preferences_window)
         menu_bar.add_cascade(label="Edit", menu=edit_menu)
 
         # Help menu
@@ -487,6 +488,10 @@ class MainApplication:
     def take_from_window(self, **kwargs):
         for key, value in kwargs.items():
             self.__setattr__(key, value)
+
+    def open_preferences_window(self):
+        window = tk.Toplevel()
+        PreferencesWindow(window)
 
 
 def main():

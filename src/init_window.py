@@ -37,7 +37,7 @@ class InitWindow:
         self.players1_nums = []
         self.players2_nums = []
 
-        self.team1 = tk.Entry(player_entries, width=21)
+        self.team1 = tk.Entry(player_entries, width=20)
         self.team1.grid(column=1, row=0, columnspan=2)
         self.team1.insert(0, "Home")
 
@@ -50,7 +50,7 @@ class InitWindow:
             ent.grid(column=2, row=i, sticky=tk.W)
             self.players1_nums.append(ent)
 
-        self.team2 = tk.Entry(player_entries, width=21)
+        self.team2 = tk.Entry(player_entries, width=20)
         self.team2.grid(column=4, row=0, columnspan=2)
         self.team2.insert(0, "Guest")
 

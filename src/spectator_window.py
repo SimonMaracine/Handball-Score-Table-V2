@@ -1,11 +1,23 @@
+import json
 import tkinter as tk
+from os.path import join
 
-SCL = 1
+SCL = float
 
 
 class SpectatorWindow:
 
     def __init__(self, top_level: tk.Toplevel, **kwargs):
+        try:
+            with open(join("data", "settings.json"), "r") as file:
+                global SCL
+                raw_data = file.read()
+                settings: dict = json.loads(raw_data)
+                SCL = settings["spectator_scale"]
+        except FileNotFoundError:
+            print("No settings file found")
+            SCL = 1.0
+
         self.top_level = top_level
         self.top_level.minsize(width=int(1000 * SCL), height=int(660 * SCL))
         self.content = tk.Frame(self.top_level)

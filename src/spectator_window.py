@@ -24,6 +24,7 @@ class SpectatorWindow:
         self.top_level = top_level
         self.top_level.minsize(width=int(1000 * SCL), height=int(660 * SCL))
         self.top_level.title("Handball Score Table")
+        self.top_level.protocol("WM_DELETE_WINDOW", self.close)
         self.content = tk.Frame(self.top_level)
         self.content.pack(expand=True, padx=int(6 * SCL), pady=int(6 * SCL))
         for key, value in kwargs.items():
@@ -116,3 +117,7 @@ class SpectatorWindow:
     def back_to_game(self):
         self.time_out_timer_text.grid_remove()
         self.timer_text.grid()
+
+    def close(self):
+        self.spectator_windows.remove(self.top_level)
+        self.top_level.destroy()

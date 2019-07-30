@@ -9,6 +9,7 @@ from src.team import Team
 
 
 class MainApplication:
+    spectator_windows = []
 
     def __init__(self, root: tk.Tk):
         self.root = root
@@ -426,7 +427,8 @@ class MainApplication:
         self.score_team2_var.set("0")
         self.round_num_var.set("1")
         # self.__selected_player = None
-        # todo close all spectatot windows
+        for window in self.spectator_windows:
+            window.destroy()
 
         # Init teams
         self.team1 = Team(config.team1, 1)
@@ -467,11 +469,12 @@ class MainApplication:
 
     def open_spectator_window(self):
         window = tk.Toplevel()
+        self.spectator_windows.append(window)
         SpectatorWindow(window, players1=self.team1.players, players2=self.team2.players, time_var=self.time_var,
                         round_num_var=self.round_num_var, score_team1_var=self.score_team1_var,
                         score_team2_var=self.score_team2_var, name_team1_var=self.name_team1_var,
                         name_team2_var=self.name_team2_var, time_out_var=self.time_out_var,
-                        to_give_back=self.take_from_window)
+                        to_give_back=self.take_from_window, spectator_windows=self.spectator_windows)
 
     def open_init_window(self):
         window = tk.Toplevel()

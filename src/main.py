@@ -14,6 +14,7 @@ class MainApplication:
         self.root = root
         self.root.option_add("*tearOff", False)
         self.root.minsize(width=1000, height=560)
+        self.root.title("Handball Score Table")
         menu_bar = tk.Menu()
         self.root.config(menu=menu_bar)
         self.content = tk.Frame(self.root, padx=8, pady=8)
@@ -425,6 +426,7 @@ class MainApplication:
         self.score_team2_var.set("0")
         self.round_num_var.set("1")
         # self.__selected_player = None
+        # todo close all spectatot windows
 
         # Init teams
         self.team1 = Team(config.team1, 1)

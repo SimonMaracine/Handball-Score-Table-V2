@@ -23,6 +23,7 @@ class SpectatorWindow:
 
         self.top_level = top_level
         self.top_level.minsize(width=int(1000 * SCL), height=int(660 * SCL))
+        self.top_level.title("Handball Score Table")
         self.content = tk.Frame(self.top_level)
         self.content.pack(expand=True, padx=int(6 * SCL), pady=int(6 * SCL))
         for key, value in kwargs.items():

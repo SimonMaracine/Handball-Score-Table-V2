@@ -14,6 +14,7 @@ class InitWindow:
         self.top_level = top_level
         self.on_apply = on_apply
         self.top_level.minsize(width=670, height=420)
+        self.top_level.title("New Match")
         self.content = tk.Frame(self.top_level)
         self.content.pack(side="top", fill="both", expand=True, padx=10, pady=10)
         for key, value in kwargs.items():
@@ -180,6 +181,7 @@ class InitWindow:
                 config: dict = json.loads(config_raw)
         except FileNotFoundError:
             print(f'No configuration file "{json_file}" found')
+            self.alert(f'No configuration file "{json_file}" found')
             return
 
         # Get those values
@@ -268,7 +270,11 @@ class InitWindow:
         with open(join(self.PATH_TO_CONFIGS, json_file + ".json"), "w") as file:
             json.dump(config, file)
 
-        print("Saved configuration " + json_file)
+        print(f'Saved configuration "{json_file}"')
+        self.info(f'Saved configuration "{json_file}"')
 
     def alert(self, message: str):
         messagebox.showerror(title="Error", message=message, parent=self.top_level)
+
+    def info(self, message: str):
+        messagebox.showinfo(title="Info", message=message, parent=self.top_level)

@@ -13,6 +13,7 @@ class PreferencesWindow:
     def __init__(self, top_level: tk.Toplevel):
         self.top_level = top_level
         self.top_level.minsize(width=320, height=240)
+        self.top_level.title("Preferences")
         self.content = tk.Frame(self.top_level)
         self.content.grid(column=0, row=0, padx=10, pady=10)
 
@@ -21,7 +22,7 @@ class PreferencesWindow:
         container1 = tk.Frame(self.content)
         container2 = tk.Frame(self.content)
 
-        container1.grid(column=0, row=0)
+        container1.grid(column=0, row=0, pady=12)
         container2.grid(column=0, row=1)
 
         # Settings

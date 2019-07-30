@@ -13,7 +13,7 @@ class InitWindow:
     def __init__(self, top_level: tk.Toplevel, on_apply: Callable, **kwargs):
         self.top_level = top_level
         self.on_apply = on_apply
-        self.top_level.minsize(width=660, height=420)
+        self.top_level.minsize(width=670, height=420)
         self.content = tk.Frame(self.top_level)
         self.content.pack(side="top", fill="both", expand=True, padx=10, pady=10)
         for key, value in kwargs.items():
@@ -77,7 +77,7 @@ class InitWindow:
         ###########################################################################################
         self.match = tk.Entry(config_entries, width=5)
         self.match.grid(column=1, row=0, sticky=tk.N)
-        self.match.insert(0, "900")
+        self.match.insert(0, "20")
         self.timeout = tk.Entry(config_entries, width=5)
         self.timeout.grid(column=1, row=1, sticky=tk.N)
         self.timeout.insert(0, "60")
@@ -95,6 +95,9 @@ class InitWindow:
         tk.Label(config_entries, text="Match time").grid(column=0, row=0, sticky=tk.N)
         tk.Label(config_entries, text="Timeout time").grid(column=0, row=1, sticky=tk.N)
         tk.Label(config_entries, text="Player suspend time").grid(column=0, row=2, sticky=tk.N)
+        tk.Label(config_entries, text="min").grid(column=2, row=0, sticky=tk.N)
+        tk.Label(config_entries, text="sec").grid(column=2, row=1, sticky=tk.N)
+        tk.Label(config_entries, text="sec").grid(column=2, row=2, sticky=tk.N)
 
         # Buttons
         ###########################################################################################
@@ -143,6 +146,23 @@ class InitWindow:
         match = self.match.get()
         timeout = self.timeout.get()
         suspend = self.suspend.get()
+
+        m = int(match)
+        if m < 1:
+            match = "1"
+        elif m > 90:
+            match = "90"
+        t = int(timeout)
+        if t < 10:
+            timeout = "10"
+        elif t > 900:
+            timeout = "900"
+        s = int(suspend)
+        if s < 15:
+            suspend = "15"
+        elif s > 300:
+            suspend = "300"
+
         return team1, team2, players1, players2, nums1, nums2, match, timeout, suspend
 
     def apply_new_configuration(self):

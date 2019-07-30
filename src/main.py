@@ -453,7 +453,7 @@ class MainApplication:
             self.players2_list.insert(i, "{} [{:02d}]".format(player.name, player.number))
 
         # Init main timer
-        self.timer = Timer(self.time_var, None, int(config.match))
+        self.timer = Timer(self.time_var, None, int(config.match) * 60)
         self.time_var.set(self.timer.get_time())
 
         # Init timeout timers

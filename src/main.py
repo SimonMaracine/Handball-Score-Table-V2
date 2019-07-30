@@ -43,7 +43,7 @@ class MainApplication:
         # Help menu
         ###########################################################################################
         help_menu = tk.Menu(menu_bar)
-        help_menu.add_command(label="About", command=self.say_hello, state="disabled")
+        help_menu.add_command(label="About", command=None, state="disabled")
         menu_bar.add_cascade(label="Help", menu=help_menu)
 
         # Containers
@@ -81,15 +81,7 @@ class MainApplication:
         ###########################################################################################
         self.name_team1_var = tk.StringVar(container1, value=self.team1.name)
         team1_name = tk.Frame(container1, borderwidth=4, relief="sunken")
-        # if len(self.team2.name) >= 20:
-        #     size = 14
-        # elif len(self.team2.name) >= 15:
-        #     size = 18
-        # elif len(self.team2.name) >= 10:
-        #     size = 27
-        # else:
-        size = 18
-        tk.Label(team1_name, textvariable=self.name_team1_var, font="Times, {}".format(size)).pack(padx=8, pady=22)
+        tk.Label(team1_name, textvariable=self.name_team1_var, font="Times, 18").pack(padx=8, pady=22)
 
         score1 = tk.Frame(container1)
         team1_score = tk.Frame(score1, borderwidth=3, relief="sunken")
@@ -115,15 +107,7 @@ class MainApplication:
         ###########################################################################################
         self.name_team2_var = tk.StringVar(container1, value=self.team2.name)
         team2_name = tk.Frame(container1, borderwidth=4, relief="sunken")
-        # if len(self.team2.name) >= 20:
-        #     size = 14
-        # elif len(self.team2.name) >= 15:
-        #     size = 18
-        # elif len(self.team2.name) >= 10:
-        #     size = 27
-        # else:
-        size = 18
-        tk.Label(team2_name, textvariable=self.name_team2_var, font="Times, {}".format(size)).pack(padx=8, pady=22)
+        tk.Label(team2_name, textvariable=self.name_team2_var, font="Times, 18").pack(padx=8, pady=22)
 
         score2 = tk.Frame(container1)
         team2_score = tk.Frame(score2, borderwidth=3, relief="sunken")
@@ -164,9 +148,9 @@ class MainApplication:
         self.round_num_var = tk.IntVar(container3, value=1)
         tk.Label(match_round, textvariable=self.round_num_var, font="Times, 50").pack(padx=30, pady=5)
 
-        match_round.grid(column=0, row=0, rowspan=2)
+        match_round.grid(column=0, row=0, rowspan=2, padx=8)
 
-        match.grid(column=0, row=1)
+        match.grid(column=0, row=1, pady=10)
 
         # Timeout timer
         ###########################################################################################
@@ -174,15 +158,16 @@ class MainApplication:
         self.time_out_timer = Timer(self.time_out_var, lambda: self.back_to_game(), 60)
         self.time_out_var.set(self.time_out_timer.get_time())
 
-        self.time_out_timer_text = tk.Label(main_timer, textvariable=self.time_out_var, font="Times, 70", foreground="darkred")
+        self.time_out_timer_text = tk.Label(main_timer, textvariable=self.time_out_var, font="Times, 70",
+                                            foreground="darkred")
         self.time_out_timer_text.grid(column=0, row=0, columnspan=3)
         self.time_out_timer_text.grid_remove()
 
         # Timer buttons
         ###########################################################################################
-        tk.Button(main_timer, text="Start", command=self.start).grid(column=0, row=1)
-        tk.Button(main_timer, text="Pause", command=self.pause).grid(column=1, row=1)
-        tk.Button(main_timer, text="Stop", command=self.stop).grid(column=2, row=1)
+        tk.Button(main_timer, text="Start", command=self.start).grid(column=0, row=1, pady=3)
+        tk.Button(main_timer, text="Pause", command=self.pause).grid(column=1, row=1, pady=3)
+        tk.Button(main_timer, text="Stop", command=self.stop).grid(column=2, row=1, pady=3)
 
         # Round buttons
         ###########################################################################################
@@ -191,8 +176,8 @@ class MainApplication:
 
         # Time out buttons
         ###########################################################################################
-        tk.Button(score1, text="T", command=lambda: self.time_out(self.team1)).grid(column=1, row=0, sticky=tk.S)
-        tk.Button(score2, text="T", command=lambda: self.time_out(self.team2)).grid(column=0, row=0, sticky=tk.S)
+        tk.Button(score1, text="T", command=lambda: self.time_out(self.team1)).grid(column=1, row=0, sticky=tk.S, padx=2)
+        tk.Button(score2, text="T", command=lambda: self.time_out(self.team2)).grid(column=0, row=0, sticky=tk.S, padx=2)
 
         # Menu for players
         ###########################################################################################
@@ -225,10 +210,6 @@ class MainApplication:
     def run(self):
         self.root.mainloop()
 
-    @staticmethod
-    def say_hello():
-        print("Hello")
-
     def list_box_select(self, event):
         widget = event.widget
         try:
@@ -257,7 +238,8 @@ class MainApplication:
             return
         self.__selected_player.score_up()
         self.selected_scores_var.set("Score: " + str(self.__selected_player.scores))
-        self.__selected_player.text_var.set("{} [{:02d}]    {}".format(self.__selected_player.name, self.__selected_player.number,
+        self.__selected_player.text_var.set("{} [{:02d}]    {}".format(self.__selected_player.name,
+                                                                       self.__selected_player.number,
                                                                        self.__selected_player.scores))
         if self.__selected_player.team.order == 1:
             self.score_team1_var.set(self.__selected_player.team.score)
@@ -269,7 +251,8 @@ class MainApplication:
             return
         self.__selected_player.score_down()
         self.selected_scores_var.set("Score: " + str(self.__selected_player.scores))
-        self.__selected_player.text_var.set("{} [{:02d}]    {}".format(self.__selected_player.name, self.__selected_player.number,
+        self.__selected_player.text_var.set("{} [{:02d}]    {}".format(self.__selected_player.name,
+                                                                       self.__selected_player.number,
                                                                        self.__selected_player.scores))
         if self.__selected_player.team.order == 1:
             self.score_team1_var.set(self.__selected_player.team.score)
@@ -283,7 +266,8 @@ class MainApplication:
         self.selected_cards_var.set("Cards: " +
                                     "{} yellow, ".format(self.__selected_player.yellow_cards) +
                                     "{} red".format(self.__selected_player.red_cards))
-        self.__selected_player.text_var.set("{} [{:02d}]    {}".format(self.__selected_player.name, self.__selected_player.number,
+        self.__selected_player.text_var.set("{} [{:02d}]    {}".format(self.__selected_player.name,
+                                                                       self.__selected_player.number,
                                                                        self.__selected_player.scores))
 
     def take_card(self, color: str):
@@ -293,7 +277,8 @@ class MainApplication:
         self.selected_cards_var.set("Cards: " +
                                     "{} yellow, ".format(self.__selected_player.yellow_cards) +
                                     "{} red".format(self.__selected_player.red_cards))
-        self.__selected_player.text_var.set("{} [{:02d}]    {}".format(self.__selected_player.name, self.__selected_player.number,
+        self.__selected_player.text_var.set("{} [{:02d}]    {}".format(self.__selected_player.name,
+                                                                       self.__selected_player.number,
                                                                        self.__selected_player.scores))
 
     def suspend(self):
@@ -416,7 +401,6 @@ class MainApplication:
             self.spec_back_to_game()
         except Exception:
             pass
-        # print(0)
 
     def do_players_timers(self, todo=0):
         if todo == 0:  # start
@@ -495,7 +479,8 @@ class MainApplication:
         for key, value in kwargs.items():
             self.__setattr__(key, value)
 
-    def open_preferences_window(self):
+    @staticmethod
+    def open_preferences_window():
         window = tk.Toplevel()
         PreferencesWindow(window)
 

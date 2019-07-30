@@ -2,7 +2,7 @@ import json
 import tkinter as tk
 from tkinter import messagebox
 from os.path import join
-from typing import List
+from typing import List, Callable
 
 from src.config_object import Config
 
@@ -10,7 +10,7 @@ from src.config_object import Config
 class InitWindow:
     PATH_TO_CONFIGS = join("data", "configs")
 
-    def __init__(self, top_level: tk.Toplevel, on_apply, **kwargs):
+    def __init__(self, top_level: tk.Toplevel, on_apply: Callable, **kwargs):
         self.top_level = top_level
         self.on_apply = on_apply
         self.top_level.minsize(width=660, height=420)

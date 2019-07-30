@@ -3,8 +3,8 @@ __pycache__/
 build/
 dist/
 *.pyc
+*.json
 !custom.json
 !settings.json
-*.json
 *.spec
 Handball-Score-Table-V2

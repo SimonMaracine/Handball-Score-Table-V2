@@ -4,7 +4,7 @@ from os.path import join
 
 from preferences_window import create_settings_file
 
-SCL = float
+SCL = 1.0
 
 
 class SpectatorWindow:
@@ -29,7 +29,6 @@ class SpectatorWindow:
         self.content.pack(expand=True, padx=int(6 * SCL), pady=int(6 * SCL))
         for key, value in kwargs.items():
             self.__setattr__(key, value)
-        self.to_give_back(spec_time_out=lambda: self.time_out(), spec_back_to_game=lambda: self.back_to_game())
 
         # Team 1
         ###########################################################################################
@@ -42,13 +41,13 @@ class SpectatorWindow:
         team1_players = tk.Frame(self.content, borderwidth=int(3 * SCL), relief="sunken", width=int(290 * SCL), height=int(415 * SCL))
         team1_players.pack_propagate(False)
 
-        team1_suspended = tk.Frame(self.content, borderwidth=int(4 * SCL), relief="sunken", width=int(160 * SCL), height=int(405 * SCL))
-        team1_suspended.grid_propagate(False)
+        self.team1_suspended = tk.Frame(self.content, borderwidth=int(4 * SCL), relief="sunken", width=int(160 * SCL), height=int(405 * SCL))
+        self.team1_suspended.pack_propagate(False)
 
         team1_name.grid(column=0, row=0)
         team1_score.grid(column=0, row=1)
         team1_players.grid(column=0, row=3)
-        team1_suspended.grid(column=1, row=3)
+        self.team1_suspended.grid(column=1, row=3)
 
         # Team 2
         ###########################################################################################
@@ -61,29 +60,21 @@ class SpectatorWindow:
         team2_players = tk.Frame(self.content, borderwidth=int(3 * SCL), relief="sunken", width=int(290 * SCL), height=int(415 * SCL))
         team2_players.pack_propagate(False)
 
-        team2_suspended = tk.Frame(self.content, borderwidth=int(4 * SCL), relief="sunken", width=int(160 * SCL), height=int(405 * SCL))
-        team2_suspended.grid_propagate(False)
+        self.team2_suspended = tk.Frame(self.content, borderwidth=int(4 * SCL), relief="sunken", width=int(160 * SCL), height=int(405 * SCL))
+        self.team2_suspended.pack_propagate(False)
 
         team2_name.grid(column=3, row=0)
         team2_score.grid(column=3, row=1)
         team2_players.grid(column=3, row=3)
-        team2_suspended.grid(column=2, row=3)
+        self.team2_suspended.grid(column=2, row=3)
 
         # Init players
         ###########################################################################################
         for i, player in enumerate(self.players1):
-            suspended = tk.Label(team1_suspended, textvariable=player.suspend_text_var, font=f"Times, {int(13 * SCL)}")
-            suspended.grid(row=i, padx=int(24 * SCL), pady=0)
-            # suspended.grid_remove()
-
             player.text_var = tk.StringVar(team1_players, value="{} [{:02d}]    {}".format(player.name, player.number, player.scores))
             tk.Label(team1_players, textvariable=player.text_var, font=f"Times, {int(13 * SCL)}").pack(padx=int(26 * SCL), pady=0)
 
         for i, player in enumerate(self.players2):
-            suspended = tk.Label(team2_suspended, textvariable=player.suspend_text_var, font=f"Times, {int(13 * SCL)}")
-            suspended.grid(row=i, padx=int(24 * SCL), pady=0)
-            # suspended.grid_remove()
-
             player.text_var = tk.StringVar(team2_players,
                                            value="{} [{:02d}]    {}".format(player.name, player.number, player.scores))
             tk.Label(team2_players, textvariable=player.text_var, font=f"Times, {int(13 * SCL)}").pack(padx=int(26 * SCL), pady=0)
@@ -109,6 +100,13 @@ class SpectatorWindow:
                                             foreground="darkred")
         self.time_out_timer_text.grid(padx=int(16 * SCL), pady=int(4 * SCL))
         self.time_out_timer_text.grid_remove()
+
+        # Give some variables
+        ###########################################################################################
+        self.to_give_back(spec_time_out=lambda: self.time_out(),
+                          spec_back_to_game=lambda: self.back_to_game(),
+                          spec_team1_suspended=self.team1_suspended,
+                          spec_team2_suspended=self.team2_suspended)
 
     def time_out(self):
         self.timer_text.grid_remove()

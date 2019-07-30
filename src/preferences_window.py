@@ -2,6 +2,8 @@ import json
 import tkinter as tk
 from os.path import join
 
+from src.alert_window import alert
+
 
 def create_settings_file():
     with open(join("data", "settings.json"), "w") as file:
@@ -53,7 +55,12 @@ class PreferencesWindow:
             "spectator_scale": float
         }
 
-        config["spectator_scale"] = float(self.scale.get())
+        try:
+            config["spectator_scale"] = float(self.scale.get())
+        except ValueError:
+            print("Scale must be a number")
+            alert(self.top_level, "Scale must be a number")
+            return
 
         with open(join("data", "settings.json"), "w") as file:
             json.dump(config, file)

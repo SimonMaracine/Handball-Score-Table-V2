@@ -1,5 +1,6 @@
 import tkinter as tk
 
+import src.spectator_window as spec
 from src.timer import Timer
 from src.spectator_window import SpectatorWindow
 from src.init_window import InitWindow
@@ -295,57 +296,66 @@ class MainApplication:
             if self.__selected_player.team.order == 1:
                 suspended = tk.Label(self.team1_suspended, textvariable=self.__selected_player.suspend_text_var,
                                      font="Times, 12")
-                self.suspended_players1.append(suspended)
+                spec_suspended = tk.Label(self.spec_team1_suspended, textvariable=self.__selected_player.suspend_text_var,
+                                          font=f"Times, {int(13 * spec.SCL)}")
+                self.suspended_players1.append((suspended, spec_suspended))
             else:
                 suspended = tk.Label(self.team2_suspended, textvariable=self.__selected_player.suspend_text_var,
                                      font="Times, 12")
-                self.suspended_players2.append(suspended)
+                spec_suspended = tk.Label(self.spec_team2_suspended, textvariable=self.__selected_player.suspend_text_var,
+                                          font=f"Times, {int(13 * spec.SCL)}")
+                self.suspended_players2.append((suspended, spec_suspended))
 
             suspended.pack(padx=10, pady=0)
+            spec_suspended.pack(padx=int(24 * spec.SCL), pady=0)
 
     def release(self):
         if self.__selected_player is None:
             return
         if self.__selected_player.can_release():
             if self.__selected_player.team.order == 1:
-                for suspended in self.suspended_players1:
-                    # print(suspended["text"][0:2])
-                    if int((suspended["text"])[0:2]) == self.__selected_player.number:
+                for tuple_sus in self.suspended_players1:
+                    # print(tuple_sus[0]["text"][0:2])
+                    if int((tuple_sus[0]["text"])[0:2]) == self.__selected_player.number:
                         self.__selected_player.release()
-                        suspended.destroy()
-                        self.suspended_players1.remove(suspended)
+                        tuple_sus[0].destroy()
+                        tuple_sus[1].destroy()
+                        self.suspended_players1.remove(tuple_sus)
                         break
                 else:
                     print("Could not find " + str(self.__selected_player) + " in suspended players")
             else:
-                for suspended in self.suspended_players2:
-                    # print(suspended["text"][0:2])
-                    if int((suspended["text"])[0:2]) == self.__selected_player.number:
+                for tuple_sus in self.suspended_players2:
+                    # print(tuple_sus[0]["text"][0:2])
+                    if int((tuple_sus[0]["text"])[0:2]) == self.__selected_player.number:
                         self.__selected_player.release()
-                        suspended.destroy()
-                        self.suspended_players2.remove(suspended)
+                        tuple_sus[0].destroy()
+                        tuple_sus[1].destroy()
+                        self.suspended_players2.remove(tuple_sus)
                         break
                 else:
                     print("Could not find " + str(self.__selected_player) + " in suspended players")
 
     def release_from_timer(self, player: Player):
         if player.team.order == 1:
-            for suspended in self.suspended_players1:
-                # print(suspended["text"][0:2])
-                if int((suspended["text"])[0:2]) == player.number:
+            for tuple_sus in self.suspended_players1:
+                # print(tuple_sus[0]["text"][0:2])
+                if int((tuple_sus[0]["text"])[0:2]) == player.number:
                     player.release()
-                    suspended.destroy()
-                    self.suspended_players1.remove(suspended)
+                    tuple_sus[0].destroy()
+                    tuple_sus[1].destroy()
+                    self.suspended_players1.remove(tuple_sus)
                     break
             else:
                 print("Could not find " + str(player) + " in suspended players")
         else:
-            for suspended in self.suspended_players2:
-                # print(suspended["text"][0:2])
-                if int((suspended["text"])[0:2]) == player.number:
+            for tuple_sus in self.suspended_players2:
+                # print(tuple_sus[0]["text"][0:2])
+                if int((tuple_sus[0]["text"])[0:2]) == player.number:
                     player.release()
-                    suspended.destroy()
-                    self.suspended_players2.remove(suspended)
+                    tuple_sus[0].destroy()
+                    tuple_sus[1].destroy()
+                    self.suspended_players2.remove(tuple_sus)
                     break
             else:
                 print("Could not find " + str(player) + " in suspended players")

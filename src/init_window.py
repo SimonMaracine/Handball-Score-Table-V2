@@ -1,10 +1,10 @@
 import json
 import tkinter as tk
-from tkinter import messagebox
 from os.path import join
 from typing import List, Callable
 
 from src.config_object import Config
+from src.alert_window import alert, info
 
 
 class InitWindow:
@@ -117,25 +117,25 @@ class InitWindow:
 
         if len(players1_entries) != len(nums1) or len(players2_entries) != len(nums2):
             print("All players must have a number (or a number must have a name)")
-            self.alert("All players must have a number (or a number must have a name)")
+            alert(self.top_level, "All players must have a number (or a number must have a name)")
             return
         if len(tuple(filter(lambda num: num.isdigit() and len(num) == 2, nums1))) < len(nums1) or \
                 len(tuple(filter(lambda num: num.isdigit() and len(num) == 2, nums2))) < len(nums2):
             print("Player numbers must be numbers and must be two digits")
-            self.alert("Player numbers must be numbers and must be two digits")
+            alert(self.top_level, "Player numbers must be numbers and must be two digits")
             return
         if len(self.team1.get()) > 19 or len(self.team2.get()) > 19:
             print("Team names must not exceed 19 characters")
-            self.alert("Team names must not exceed 19 characters")
+            alert(self.top_level, "Team names must not exceed 19 characters")
             return
         for name in map(lambda entry: entry.get(), players1_entries + players2_entries):
             if len(name) > 14:
                 print("Player names must not exceed 14 characters")
-                self.alert("Player names must not exceed 14 characters")
+                alert(self.top_level, "Player names must not exceed 14 characters")
                 return
         if not self.match.get().isdigit() or not self.timeout.get().isdigit() or not self.suspend.get().isdigit():
             print("Timer times must be numbers")
-            self.alert("Timer times must be numbers")
+            alert(self.top_level, "Timer times must be numbers")
             return
 
         team1 = self.team1.get()
@@ -181,7 +181,7 @@ class InitWindow:
                 config: dict = json.loads(config_raw)
         except FileNotFoundError:
             print(f'No configuration file "{json_file}" found')
-            self.alert(f'No configuration file "{json_file}" found')
+            alert(self.top_level, f'No configuration file "{json_file}" found')
             return
 
         # Get those values
@@ -271,10 +271,4 @@ class InitWindow:
             json.dump(config, file)
 
         print(f'Saved configuration "{json_file}"')
-        self.info(f'Saved configuration "{json_file}"')
-
-    def alert(self, message: str):
-        messagebox.showerror(title="Error", message=message, parent=self.top_level)
-
-    def info(self, message: str):
-        messagebox.showinfo(title="Info", message=message, parent=self.top_level)
+        info(self.top_level, f'Saved configuration "{json_file}"')

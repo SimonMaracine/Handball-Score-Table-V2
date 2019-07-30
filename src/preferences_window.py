@@ -56,11 +56,18 @@ class PreferencesWindow:
         }
 
         try:
-            config["spectator_scale"] = float(self.scale.get())
+            scale = float(self.scale.get())
         except ValueError:
             print("Scale must be a number")
             alert(self.top_level, "Scale must be a number")
             return
+
+        if scale < 0.8:
+            scale = 0.8
+        elif scale > 2.4:
+            scale = 2.4
+
+        config["spectator_scale"] = scale
 
         with open(join("data", "settings.json"), "w") as file:
             json.dump(config, file)

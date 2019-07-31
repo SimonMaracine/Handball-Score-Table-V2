@@ -111,16 +111,19 @@ class Timer:
         and checks if the time hit 0. If it did, it stops by calling self.stop.
 
         """
+        start = 0
+        stop = 0
         while self._going:
             # s = default_timer()
 
+            sleep(0.999 - (stop - start))
             start = default_timer()
-            self._tick()
+            if self._going:
+                self._tick()
             self._text_variable.set(Timer._repr(self._time))
             if self._time <= 0:
                 self.stop()
             stop = default_timer()
-            sleep(0.999 - (stop - start))
 
             # f = default_timer()
             # print(f - s)
@@ -158,16 +161,19 @@ class PlayerTimer(Timer):
         self._player = player
 
     def _run(self):
+        start = 0
+        stop = 0
         while self._going:
             # s = default_timer()
 
+            sleep(0.999 - (stop - start))
             start = default_timer()
-            self._tick()
+            if self._going:
+                self._tick()
             self._text_variable.set("{:02d} | {}".format(self._player.number, Timer._repr(self._time)))
             if self._time <= 0:
                 self.stop()
             stop = default_timer()
-            sleep(0.999 - (stop - start))
 
             # f = default_timer()
             # print(f - s)
@@ -198,11 +204,15 @@ class SelfFixTimer(Timer):
         self._seconds_passed = 0
 
     def _run(self):
+        start = 0
+        stop = 0
         while self._going:
             # s = default_timer()
 
+            sleep(0.999 - (stop - start))
             start = default_timer()
-            self._tick()
+            if self._going:
+                self._tick()
             self._text_variable.set(Timer._repr(self._time))
             if self._time <= 0:
                 self.stop()
@@ -212,7 +222,6 @@ class SelfFixTimer(Timer):
                 self._fix_time()
                 self._start_measure()
             stop = default_timer()
-            sleep(0.999 - (stop - start))
 
             # f = default_timer()
             # print(f - s)

@@ -2,7 +2,7 @@ import json
 import tkinter as tk
 from os.path import join
 
-from preferences_window import create_settings_file
+from src.preferences_window import create_settings_file
 
 SCL = 1.0
 

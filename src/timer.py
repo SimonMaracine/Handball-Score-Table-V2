@@ -111,9 +111,9 @@ class Timer:
         and checks if the time hit 0. If it did, it stops by calling self.stop.
 
         """
-        # print("started _run")
         while self._going:
-            s = default_timer()
+            # s = default_timer()
+
             start = default_timer()
             self._tick()
             self._text_variable.set(Timer._repr(self._time))
@@ -121,9 +121,9 @@ class Timer:
                 self.stop()
             stop = default_timer()
             sleep(0.999 - (stop - start))
-            f = default_timer()
-            print(f - s)
-        # print("finished _run")
+
+            # f = default_timer()
+            # print(f - s)
 
     def _tick(self):
         self._time -= 1
@@ -155,33 +155,83 @@ class PlayerTimer(Timer):
     """
     def __init__(self, text_variable, on_finish, player, countdown: int = 60):
         super().__init__(text_variable, on_finish, countdown)
-        self.player = player
+        self._player = player
 
     def _run(self):
-        # print("started _run")
         while self._going:
-            s = default_timer()
+            # s = default_timer()
+
             start = default_timer()
             self._tick()
-            self._text_variable.set("{:02d} | {}".format(self.player.number, Timer._repr(self._time)))
+            self._text_variable.set("{:02d} | {}".format(self._player.number, Timer._repr(self._time)))
             if self._time <= 0:
                 self.stop()
             stop = default_timer()
-            sleep(1 - (stop - start))
-            f = default_timer()
-            print(f - s)
-        # print("finished _run")
+            sleep(0.999 - (stop - start))
+
+            # f = default_timer()
+            # print(f - s)
 
     def stop(self):
         if self._going or self._paused:
             self._going = False
             self._paused = False
-            self._text_variable.set("{:02d} | 00:00".format(self.player.number))
+            self._text_variable.set("{:02d} | 00:00".format(self._player.number))
             print("Stopped timer")
             try:
-                if self.player.suspended:
-                    self._on_finish(self.player)
+                if self._player.suspended:
+                    self._on_finish(self._player)
             except TypeError:
                 pass
         else:
             print("Timer is not going; nothing to stop")
+
+
+class SelfFixTimer(Timer):
+
+    def __init__(self, text_variable, on_finish, countdown: int = 60):
+        super().__init__(text_variable, on_finish, countdown)
+        self._measuring = False
+        self._measure_start = 0.0
+        self._measure_stop = 0.0
+        self._did_first = False
+        self._seconds_passed = 0
+
+    def _run(self):
+        while self._going:
+            # s = default_timer()
+
+            start = default_timer()
+            self._tick()
+            self._text_variable.set(Timer._repr(self._time))
+            if self._time <= 0:
+                self.stop()
+
+            if self._time % 120 == 0 or self._did_first:
+                self._did_first = False
+                self._fix_time()
+                self._start_measure()
+            stop = default_timer()
+            sleep(0.999 - (stop - start))
+
+            # f = default_timer()
+            # print(f - s)
+
+    def _start_measure(self):
+        if not self._measuring:
+            self._measuring = True
+            self._measure_start = default_timer()
+
+    def _fix_time(self):
+        if self._measuring:
+            self._measure_stop = default_timer()
+            seconds_actually_passed: float = self._measure_stop - self._measure_start
+            delta: float = seconds_actually_passed - self._seconds_passed
+            print("Delta: " + str(delta))
+            self._time = int(self._time - delta)
+            self._measuring = False
+            self._seconds_passed = 0
+
+    def _tick(self):
+        self._time -= 1
+        self._seconds_passed += 1

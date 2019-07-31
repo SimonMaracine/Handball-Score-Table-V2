@@ -1,12 +1,18 @@
+import sys
 import tkinter as tk
 
 import src.spectator_window as spec
-from src.timer import Timer
+from src.timer import Timer, SelfFixTimer
 from src.spectator_window import SpectatorWindow
 from src.init_window import InitWindow
 from src.preferences_window import PreferencesWindow
 from src.player import Player
 from src.team import Team
+
+if sys.platform == "linux":
+    MainTimer = Timer
+elif sys.platform == "win32":
+    MainTimer = SelfFixTimer
 
 
 class MainApplication:
@@ -135,7 +141,7 @@ class MainApplication:
         # Main timer
         ###########################################################################################
         self.time_var = tk.StringVar(container3, value="00:00")
-        self.timer = Timer(self.time_var, None, 1200)
+        self.timer = MainTimer(self.time_var, None, 1200)
         self.time_var.set(self.timer.get_time())
 
         main_timer = tk.Frame(container3, borderwidth=5, relief="sunken")
@@ -467,7 +473,7 @@ class MainApplication:
             self.players2_list.insert(i, "{} [{:02d}]".format(player.name, player.number))
 
         # Init main timer
-        self.timer = Timer(self.time_var, None, int(config.match) * 60)
+        self.timer = MainTimer(self.time_var, None, int(config.match) * 60)
         self.time_var.set(self.timer.get_time())
 
         # Init timeout timers

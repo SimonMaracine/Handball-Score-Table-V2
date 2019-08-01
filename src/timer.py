@@ -200,9 +200,18 @@ class SelfFixTimer(Timer):
         self._measuring = False
         self._measure_start = 0.0
         self._measure_stop = 0.0
-        self._did_first = True
         self._seconds_passed = 0
         self._accumulator = 0.0
+
+    def pause(self):
+        if self._going and not self._paused:
+            self._going = False
+            self._paused = True
+            self._seconds_passed = 0
+            self._measuring = False
+            print("Paused timer")
+        else:
+            print("Timer is not going; nothing to pause")
 
     def stop(self):
         if self._going or self._paused:
@@ -223,6 +232,7 @@ class SelfFixTimer(Timer):
     def _run(self):
         start = 0
         stop = 0
+        self._start_measure()
         while self._going:
             # s = default_timer()
 
@@ -234,8 +244,8 @@ class SelfFixTimer(Timer):
             if self._time <= 0:
                 self.stop()
 
-            if self._going and (self._time % 120 == 0 or self._did_first):
-                self._did_first = False
+            if self._going and self._time % 120 == 0:
+                print("Time: " + str(self._time))
                 self._fix_time()
                 self._start_measure()
             stop = default_timer()
@@ -258,9 +268,13 @@ class SelfFixTimer(Timer):
             print("Delta: " + str(delta))
 
             self._accumulator += delta
+            print("Accumulator: " + str(self._accumulator))
+
             if self._accumulator >= 1:
-                self._time += 1
-                self._accumulator -= 1
+                sec_forward = int(self._accumulator)
+                self._time -= sec_forward
+                self._accumulator -= sec_forward
+                print("Forward {} second(s)".format(sec_forward))
 
             self._measuring = False
             self._seconds_passed = 0

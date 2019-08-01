@@ -302,18 +302,29 @@ class MainApplication:
             if self.__selected_player.team.order == 1:
                 suspended = tk.Label(self.team1_suspended, textvariable=self.__selected_player.suspend_text_var,
                                      font="Times, 12")
-                spec_suspended = tk.Label(self.spec_team1_suspended, textvariable=self.__selected_player.suspend_text_var,
-                                          font=f"Times, {int(13 * spec.SCL)}")
+                spec_suspended = None
+                try:
+                    spec_suspended = tk.Label(self.spec_team1_suspended, textvariable=self.__selected_player.suspend_text_var,
+                                              font=f"Times, {int(13 * spec.SCL)}")
+                except Exception:
+                    pass
                 self.suspended_players1.append((suspended, spec_suspended))
             else:
                 suspended = tk.Label(self.team2_suspended, textvariable=self.__selected_player.suspend_text_var,
                                      font="Times, 12")
-                spec_suspended = tk.Label(self.spec_team2_suspended, textvariable=self.__selected_player.suspend_text_var,
-                                          font=f"Times, {int(13 * spec.SCL)}")
+                spec_suspended = None
+                try:
+                    spec_suspended = tk.Label(self.spec_team2_suspended, textvariable=self.__selected_player.suspend_text_var,
+                                              font=f"Times, {int(13 * spec.SCL)}")
+                except Exception:
+                    pass
                 self.suspended_players2.append((suspended, spec_suspended))
 
             suspended.pack(padx=10, pady=0)
-            spec_suspended.pack(padx=int(24 * spec.SCL), pady=0)
+            try:
+                spec_suspended.pack(padx=int(24 * spec.SCL), pady=0)
+            except AttributeError:
+                pass
 
     def release(self):
         if self.__selected_player is None:
@@ -325,7 +336,10 @@ class MainApplication:
                     if int((tuple_sus[0]["text"])[0:2]) == self.__selected_player.number:
                         self.__selected_player.release()
                         tuple_sus[0].destroy()
-                        tuple_sus[1].destroy()
+                        try:
+                            tuple_sus[1].destroy()
+                        except AttributeError:
+                            pass
                         self.suspended_players1.remove(tuple_sus)
                         break
                 else:
@@ -336,7 +350,10 @@ class MainApplication:
                     if int((tuple_sus[0]["text"])[0:2]) == self.__selected_player.number:
                         self.__selected_player.release()
                         tuple_sus[0].destroy()
-                        tuple_sus[1].destroy()
+                        try:
+                            tuple_sus[1].destroy()
+                        except AttributeError:
+                            pass
                         self.suspended_players2.remove(tuple_sus)
                         break
                 else:
@@ -349,7 +366,10 @@ class MainApplication:
                 if int((tuple_sus[0]["text"])[0:2]) == player.number:
                     player.release()
                     tuple_sus[0].destroy()
-                    tuple_sus[1].destroy()
+                    try:
+                        tuple_sus[1].destroy()
+                    except AttributeError:
+                        pass
                     self.suspended_players1.remove(tuple_sus)
                     break
             else:
@@ -360,7 +380,10 @@ class MainApplication:
                 if int((tuple_sus[0]["text"])[0:2]) == player.number:
                     player.release()
                     tuple_sus[0].destroy()
-                    tuple_sus[1].destroy()
+                    try:
+                        tuple_sus[1].destroy()
+                    except AttributeError:
+                        pass
                     self.suspended_players2.remove(tuple_sus)
                     break
             else:

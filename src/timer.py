@@ -200,8 +200,25 @@ class SelfFixTimer(Timer):
         self._measuring = False
         self._measure_start = 0.0
         self._measure_stop = 0.0
-        self._did_first = False
+        self._did_first = True
         self._seconds_passed = 0
+        self._accumulator = 0.0
+
+    def stop(self):
+        if self._going or self._paused:
+            self._going = False
+            self._paused = False
+            self._time = self._countdown
+            self._seconds_passed = 0
+            self._accumulator = 0.0
+            self._text_variable.set(Timer._repr(self._time))
+            try:
+                self._on_finish()
+            except TypeError:
+                pass
+            print("Stopped timer")
+        else:
+            print("Timer is not going; nothing to stop")
 
     def _run(self):
         start = 0
@@ -217,7 +234,7 @@ class SelfFixTimer(Timer):
             if self._time <= 0:
                 self.stop()
 
-            if self._time % 120 == 0 or self._did_first:
+            if self._going and (self._time % 120 == 0 or self._did_first):
                 self._did_first = False
                 self._fix_time()
                 self._start_measure()
@@ -234,10 +251,17 @@ class SelfFixTimer(Timer):
     def _fix_time(self):
         if self._measuring:
             self._measure_stop = default_timer()
-            seconds_actually_passed: float = self._measure_stop - self._measure_start
-            delta: float = seconds_actually_passed - self._seconds_passed
+            seconds_actually_passed: float = self._measure_stop - self._measure_start  # How many seconds actually passed in
+            print("Actually passed: " + str(seconds_actually_passed))                  # those presumably 2 minutes
+            print("Ticks passed: " + str(self._seconds_passed))
+            delta: float = seconds_actually_passed - self._seconds_passed  # The difference should be 1 - 2 seconds
             print("Delta: " + str(delta))
-            self._time = int(self._time - delta)
+
+            self._accumulator += delta
+            if self._accumulator >= 1:
+                self._time += 1
+                self._accumulator -= 1
+
             self._measuring = False
             self._seconds_passed = 0
 

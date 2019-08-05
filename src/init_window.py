@@ -9,6 +9,7 @@ from src.alert_window import alert, info
 
 class InitWindow:
     PATH_TO_CONFIGS = join("data", "configs")
+    LAST_CONFIG = "_last"
 
     def __init__(self, top_level: tk.Toplevel, on_apply: Callable, **kwargs):
         self.top_level = top_level
@@ -87,9 +88,9 @@ class InitWindow:
         self.suspend.insert(0, "120")
 
         self.config_load = tk.Entry(configs, width=10)
-        self.config_load.grid(column=0, row=0)
+        self.config_load.grid(column=0, row=1)
         self.config_save = tk.Entry(configs, width=10)
-        self.config_save.grid(column=0, row=1)
+        self.config_save.grid(column=0, row=2)
 
         # Config labels
         ###########################################################################################
@@ -105,9 +106,11 @@ class InitWindow:
         tk.Button(buttons, text="Apply", command=self.apply_new_configuration).grid(column=0, row=0, ipadx=6, padx=8)
         tk.Button(buttons, text="Discard", command=self.top_level.destroy).grid(column=1, row=0, ipadx=6, padx=8)
         tk.Button(configs, text="Load config",
-                  command=lambda: self.load_configuration(self.config_load.get())).grid(column=1, row=0)
+                  command=lambda: self.load_configuration(self.config_load.get())).grid(column=1, row=1)
         tk.Button(configs, text="Save config",
-                  command=lambda: self.save_configuration(self.config_save.get())).grid(column=1, row=1)
+                  command=lambda: self.save_configuration(self.config_save.get())).grid(column=1, row=2)
+        tk.Button(configs, text="Load last config",
+                  command=lambda: self.load_configuration(self.LAST_CONFIG)).grid(column=0, row=0, columnspan=2, sticky=tk.E)
 
     def get_current_entries(self) -> tuple:
         players1_entries = tuple(filter(lambda entry: entry.get(), self.team1_players))
@@ -172,6 +175,7 @@ class InitWindow:
         except TypeError:  # If returned prematurely, with an error
             return
         self.on_apply(Config(team1, team2, players1, players2, nums1, nums2, match, timeout, suspend))
+        self.save_configuration(self.LAST_CONFIG, message=False)
         self.top_level.destroy()
 
     def load_configuration(self, json_file: str):
@@ -226,7 +230,7 @@ class InitWindow:
 
         print("Loaded configuration " + json_file)
 
-    def save_configuration(self, json_file: str):
+    def save_configuration(self, json_file: str, message=True):
         config = {
             "teams": [
                 {
@@ -271,4 +275,5 @@ class InitWindow:
             json.dump(config, file)
 
         print(f'Saved configuration "{json_file}"')
-        info(self.top_level, f'Saved configuration "{json_file}"')
+        if message:
+            info(self.top_level, f'Saved configuration "{json_file}"')

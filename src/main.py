@@ -2,7 +2,7 @@ import sys
 import tkinter as tk
 
 import src.spectator_window as spec
-from src.timer import Timer, SelfFixTimer
+from src.timer import Timer, SelfFixTimer, TimeOutTimer
 from src.spectator_window import SpectatorWindow
 from src.init_window import InitWindow
 from src.preferences_window import PreferencesWindow
@@ -164,7 +164,7 @@ class MainApplication:
         # Timeout timer
         ###########################################################################################
         self.time_out_var = tk.StringVar(container3, value="00:00")
-        self.time_out_timer = Timer(self.time_out_var, lambda: self.back_to_game(), 60)
+        self.time_out_timer = TimeOutTimer(self.time_out_var, lambda: self.back_to_game(), 60)
         self.time_out_var.set(self.time_out_timer.get_time())
 
         self.time_out_timer_text = tk.Label(main_timer, textvariable=self.time_out_var, font="Times, 70",
@@ -500,7 +500,7 @@ class MainApplication:
         self.time_var.set(self.timer.get_time())
 
         # Init timeout timers
-        self.time_out_timer = Timer(self.time_out_var, lambda: self.back_to_game(), int(config.timeout))
+        self.time_out_timer = TimeOutTimer(self.time_out_var, lambda: self.back_to_game(), int(config.timeout))
         self.time_out_var.set(self.time_out_timer.get_time())
 
     # def add_another_player(self):

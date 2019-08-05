@@ -2,8 +2,9 @@ import threading
 from time import sleep
 from timeit import default_timer
 
-# wave_obj = simpleaudio.WaveObject.from_wave_file("sounds/sound.wav") todo implement sound
-# sound = wave_obj.play()
+import simpleaudio
+
+# todo timer start pause bug
 
 
 class Timer:
@@ -282,3 +283,43 @@ class SelfFixTimer(Timer):
     def _tick(self):
         self._time -= 1
         self._seconds_passed += 1
+
+
+class TimeOutTimer(Timer):
+
+    _sound_wave = simpleaudio.WaveObject.from_wave_file("sounds/sound.wav")
+
+    def __init__(self, text_variable, on_finish, countdown: int = 60):
+        super().__init__(text_variable, on_finish, countdown)
+
+    def start(self):
+        if not self._going:
+            self._going = True
+            self._paused = False
+            self._thread = threading.Thread(target=self._run, daemon=True)
+            self._thread.start()
+            self._sound_wave.play()
+            print("Started timer")
+        else:
+            print("Timer is already going")
+
+    def _run(self):
+        start = 0
+        stop = 0
+        while self._going:
+            # s = default_timer()
+
+            sleep(0.999 - (stop - start))
+            start = default_timer()
+            if self._going:
+                self._tick()
+            self._text_variable.set(Timer._repr(self._time))
+            if self._time == 10:
+                self._sound_wave.play()
+            elif self._time <= 0:
+                self.stop()
+                self._sound_wave.play()
+            stop = default_timer()
+
+            # f = default_timer()
+            # print(f - s)

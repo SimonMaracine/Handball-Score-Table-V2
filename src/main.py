@@ -8,6 +8,7 @@ from src.init_window import InitWindow
 from src.preferences_window import PreferencesWindow
 from src.player import Player
 from src.team import Team
+from src.alert_window import ask, info
 
 if sys.platform == "linux":
     MainTimer = Timer
@@ -214,7 +215,7 @@ class MainApplication:
         tk.Button(container2, text="- Red card",
                   command=lambda: self.take_card("red")).grid(column=1, row=5, columnspan=1, sticky=tk.E)
         tk.Button(container2, text="Disqualify",
-                  command=None).grid(column=0, row=6, columnspan=2)
+                  command=self.disqualify).grid(column=0, row=6, columnspan=2)
 
     def run(self):
         self.root.mainloop()
@@ -245,6 +246,9 @@ class MainApplication:
     def score_up(self):
         if self.__selected_player is None:
             return
+        if self.__selected_player.disqualified:
+            info(self.root, f"{self.__selected_player.name} is disqualified")
+            return
         self.__selected_player.score_up()
         self.selected_scores_var.set("Score: " + str(self.__selected_player.scores))
         self.__selected_player.text_var.set("{} [{:02d}]    {}".format(self.__selected_player.name,
@@ -257,6 +261,9 @@ class MainApplication:
 
     def score_down(self):
         if self.__selected_player is None:
+            return
+        if self.__selected_player.disqualified:
+            info(self.root, f"{self.__selected_player.name} is disqualified")
             return
         self.__selected_player.score_down()
         self.selected_scores_var.set("Score: " + str(self.__selected_player.scores))
@@ -271,6 +278,9 @@ class MainApplication:
     def give_card(self, color: str):
         if self.__selected_player is None:
             return
+        if self.__selected_player.disqualified:
+            info(self.root, f"{self.__selected_player.name} is disqualified")
+            return
         self.__selected_player.give_card(color)
         self.selected_cards_var.set("Cards: " +
                                     "{} yellow, ".format(self.__selected_player.yellow_cards) +
@@ -282,6 +292,9 @@ class MainApplication:
     def take_card(self, color: str):
         if self.__selected_player is None:
             return
+        if self.__selected_player.disqualified:
+            info(self.root, f"{self.__selected_player.name} is disqualified")
+            return
         self.__selected_player.take_card(color)
         self.selected_cards_var.set("Cards: " +
                                     "{} yellow, ".format(self.__selected_player.yellow_cards) +
@@ -292,6 +305,9 @@ class MainApplication:
 
     def suspend(self):
         if self.__selected_player is None:
+            return
+        if self.__selected_player.disqualified:
+            info(self.root, f"{self.__selected_player.name} is disqualified")
             return
         if self.__selected_player.can_suspend():
             if not self.timer.get_going() or self.time_out_timer.get_going():
@@ -328,6 +344,9 @@ class MainApplication:
 
     def release(self):
         if self.__selected_player is None:
+            return
+        if self.__selected_player.disqualified:
+            info(self.root, f"{self.__selected_player.name} is disqualified")
             return
         if self.__selected_player.can_release():
             if self.__selected_player.team.order == 1:
@@ -388,6 +407,16 @@ class MainApplication:
                     break
             else:
                 print("Could not find " + str(player) + " in suspended players")
+
+    def disqualify(self):
+        if self.__selected_player is None:
+            return
+        if self.__selected_player.disqualified:
+            info(self.root, f"{self.__selected_player.name} is already disqualified")
+            return
+        if ask(self.root, f"Are you sure you want to disqualify {self.__selected_player.name}?"):
+            self.release()
+            self.__selected_player.disqualify()
 
     def round_up(self):
         if self.round_num_var.get() < 9:
@@ -503,8 +532,14 @@ class MainApplication:
         self.time_out_timer = TimeOutTimer(self.time_out_var, lambda: self.back_to_game(), int(config.timeout))
         self.time_out_var.set(self.time_out_timer.get_time())
 
-    # def add_another_player(self):
-    #     pass
+    # def add_another_player(self, player_name: str, number: int, team):
+    #     player = Player(player_name, number, team, self.release_from_timer)
+    #     team.add_player(player)
+    #     team.sort_players()
+    #     if team.order == 1:
+    #         self.players1_list.insert(tk.LAST, "{} [{:02d}]".format(player.name, player.number))
+    #     else:
+    #         self.players2_list.insert(tk.LAST, "{} [{:02d}]".format(player.name, player.number))
 
     def open_spectator_window(self):
         window = tk.Toplevel()

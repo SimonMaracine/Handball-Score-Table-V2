@@ -74,7 +74,7 @@ class Timer:
     def pause(self):
         """Pause the timer
 
-        If the timer not running or currently paused, this does nothing.
+        If the timer is not running or currently paused, this does nothing.
 
         """
         if self._going and not self._paused:

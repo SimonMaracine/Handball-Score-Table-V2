@@ -7,3 +7,8 @@ def alert(window, message: str):
 
 def info(window, message: str):
     messagebox.showinfo(title="Info", message=message, parent=window)
+
+
+def ask(window, message: str) -> bool:
+    response = messagebox.askyesno(title="Confirm", message=message, parent=window)
+    return response

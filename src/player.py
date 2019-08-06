@@ -122,4 +122,4 @@ class Player:
             return False
 
     def disqualify(self):
-        pass
+        self.disqualified = True

@@ -135,11 +135,19 @@ class InitWindow:
             return
 
         if team == 1:
-            self.logo1 = ImageTk.PhotoImage(Image.open(logo_file).resize((40, 30), Image.ANTIALIAS))
+            try:
+                self.logo1 = ImageTk.PhotoImage(Image.open(logo_file).resize((40, 30), Image.ANTIALIAS))
+            except OSError:
+                alert(self.top_level, "You must select an image of format PNG, GIF or JPG")
+                return
             self.logo1_label["image"] = self.logo1
             self.logo1_to_return = logo_file
         else:
-            self.logo2 = ImageTk.PhotoImage(Image.open(logo_file).resize((40, 30), Image.ANTIALIAS))
+            try:
+                self.logo2 = ImageTk.PhotoImage(Image.open(logo_file).resize((40, 30), Image.ANTIALIAS))
+            except OSError:
+                alert(self.top_level, "You must select an image of format PNG, GIF or JPG")
+                return
             self.logo2_label["image"] = self.logo2
             self.logo2_to_return = logo_file
 

@@ -1,5 +1,6 @@
 import sys
 import tkinter as tk
+from os.path import join
 
 import src.spectator_window as spec
 from src.timer import Timer, SelfFixTimer, TimeOutTimer
@@ -138,6 +139,11 @@ class MainApplication:
         score2.grid(column=2, row=0)
         team2_players.grid(column=3, row=1)
         self.team2_suspended.grid(column=2, row=1)
+
+        # Logos
+        ###########################################################################################
+        self.logo1 = join("gfx", "logo.png")
+        self.logo2 = join("gfx", "logo.png")
 
         # Main timer
         ###########################################################################################
@@ -532,6 +538,10 @@ class MainApplication:
         self.time_out_timer = TimeOutTimer(self.time_out_var, lambda: self.back_to_game(), int(config.timeout))
         self.time_out_var.set(self.time_out_timer.get_time())
 
+        # Init logos
+        self.logo1 = config.logo1
+        self.logo2 = config.logo2
+
     # def add_another_player(self, player_name: str, number: int, team):
     #     player = Player(player_name, number, team, self.release_from_timer)
     #     team.add_player(player)
@@ -548,6 +558,7 @@ class MainApplication:
                         round_num_var=self.round_num_var, score_team1_var=self.score_team1_var,
                         score_team2_var=self.score_team2_var, name_team1_var=self.name_team1_var,
                         name_team2_var=self.name_team2_var, time_out_var=self.time_out_var,
+                        logo1=self.logo1, logo2=self.logo2,
                         to_give_back=self.take_from_window, spectator_windows=self.spectator_windows)
 
     def open_init_window(self):

@@ -1,6 +1,7 @@
 import json
 import tkinter as tk
 from os.path import join
+from PIL import Image, ImageTk
 
 from src.preferences_window import create_settings_file
 
@@ -30,6 +31,16 @@ class SpectatorWindow:
         for key, value in kwargs.items():
             self.__setattr__(key, value)
 
+        # Team logos
+        ###########################################################################################
+        logo1 = Image.open(self.logo1)
+        logo1 = logo1.resize((118, 88), Image.ANTIALIAS)
+        self.team1_logo = ImageTk.PhotoImage(logo1)
+
+        logo2 = Image.open(self.logo2)
+        logo2 = logo2.resize((118, 88), Image.ANTIALIAS)
+        self.team2_logo = ImageTk.PhotoImage(logo2)
+
         # Team 1
         ###########################################################################################
         team1_name = tk.Frame(self.content, borderwidth=int(4 * SCL), relief="sunken", width=int(400 * SCL), height=int(100 * SCL))
@@ -44,10 +55,13 @@ class SpectatorWindow:
         self.team1_suspended = tk.Frame(self.content, borderwidth=int(4 * SCL), relief="sunken", width=int(160 * SCL), height=int(405 * SCL))
         self.team1_suspended.pack_propagate(False)
 
-        team1_name.grid(column=0, row=0)
-        team1_score.grid(column=0, row=1)
-        team1_players.grid(column=0, row=3)
-        self.team1_suspended.grid(column=1, row=3)
+        team1_logo = tk.Label(self.content, image=self.team1_logo)
+
+        team1_name.grid(column=0, row=0, columnspan=2)
+        team1_score.grid(column=1, row=1)
+        team1_players.grid(column=0, row=2, columnspan=2)
+        self.team1_suspended.grid(column=2, row=2)
+        team1_logo.grid(column=0, row=1)
 
         # Team 2
         ###########################################################################################
@@ -63,10 +77,13 @@ class SpectatorWindow:
         self.team2_suspended = tk.Frame(self.content, borderwidth=int(4 * SCL), relief="sunken", width=int(160 * SCL), height=int(405 * SCL))
         self.team2_suspended.pack_propagate(False)
 
-        team2_name.grid(column=3, row=0)
-        team2_score.grid(column=3, row=1)
-        team2_players.grid(column=3, row=3)
-        self.team2_suspended.grid(column=2, row=3)
+        team2_logo = tk.Label(self.content, image=self.team2_logo)
+
+        team2_name.grid(column=4, row=0, columnspan=2)
+        team2_score.grid(column=4, row=1)
+        team2_players.grid(column=4, row=2, columnspan=2)
+        self.team2_suspended.grid(column=3, row=2)
+        team2_logo.grid(column=5, row=1)
 
         # Init players
         ###########################################################################################
@@ -85,14 +102,14 @@ class SpectatorWindow:
         self.timer_text = tk.Label(main_timer, textvariable=self.time_var, font=f"Times, {int(74 * SCL)}")
         self.timer_text.grid(padx=int(16 * SCL), pady=int(4 * SCL))
 
-        main_timer.grid(column=1, row=0, columnspan=2)
+        main_timer.grid(column=2, row=0, columnspan=2)
 
         # Match round
         ###########################################################################################
         match_round = tk.Frame(self.content, borderwidth=int(4 * SCL), relief="sunken")
         tk.Label(match_round, textvariable=self.round_num_var, font=f"Times, {int(53 * SCL)}").pack(padx=int(32 * SCL), pady=0)
 
-        match_round.grid(column=1, row=1, columnspan=2)
+        match_round.grid(column=2, row=1, columnspan=2)
 
         # Timeout timer
         ###########################################################################################

@@ -1,7 +1,9 @@
 import json
 import tkinter as tk
+from tkinter import filedialog
 from os.path import join
 from typing import List, Callable
+from PIL import Image, ImageTk
 
 from src.config_object import Config
 from src.alert_window import alert, info
@@ -10,6 +12,7 @@ from src.alert_window import alert, info
 class InitWindow:
     PATH_TO_CONFIGS = join("data", "configs")
     LAST_CONFIG = "_last"
+    DEFAULT_LOGO = join("gfx", "logo.png")
 
     def __init__(self, top_level: tk.Toplevel, on_apply: Callable, **kwargs):
         self.top_level = top_level
@@ -77,14 +80,20 @@ class InitWindow:
 
         # Config entries
         ###########################################################################################
+        self.logo1_to_return = self.DEFAULT_LOGO
+        self.logo2_to_return = self.DEFAULT_LOGO
+
+        tk.Button(config_entries, text="Logo 1", command=lambda: self.select_logo(1)).grid(column=0, row=0)
+        tk.Button(config_entries, text="Logo 2", command=lambda: self.select_logo(2)).grid(column=0, row=1)
+
         self.match = tk.Entry(config_entries, width=5)
-        self.match.grid(column=1, row=0, sticky=tk.N)
+        self.match.grid(column=1, row=2, sticky=tk.N)
         self.match.insert(0, "20")
         self.timeout = tk.Entry(config_entries, width=5)
-        self.timeout.grid(column=1, row=1, sticky=tk.N)
+        self.timeout.grid(column=1, row=3, sticky=tk.N)
         self.timeout.insert(0, "60")
         self.suspend = tk.Entry(config_entries, width=5)
-        self.suspend.grid(column=1, row=2, sticky=tk.N)
+        self.suspend.grid(column=1, row=4, sticky=tk.N)
         self.suspend.insert(0, "120")
 
         self.config_load = tk.Entry(configs, width=10)
@@ -94,12 +103,20 @@ class InitWindow:
 
         # Config labels
         ###########################################################################################
-        tk.Label(config_entries, text="Match time").grid(column=0, row=0, sticky=tk.N)
-        tk.Label(config_entries, text="Timeout time").grid(column=0, row=1, sticky=tk.N)
-        tk.Label(config_entries, text="Player suspend time").grid(column=0, row=2, sticky=tk.N)
-        tk.Label(config_entries, text="min").grid(column=2, row=0, sticky=tk.N)
-        tk.Label(config_entries, text="sec").grid(column=2, row=1, sticky=tk.N)
-        tk.Label(config_entries, text="sec").grid(column=2, row=2, sticky=tk.N)
+        self.logo1 = ImageTk.PhotoImage(Image.open(join("gfx", "logo.png")).resize((40, 30), Image.ANTIALIAS))
+        self.logo2 = ImageTk.PhotoImage(Image.open(join("gfx", "logo.png")).resize((40, 30), Image.ANTIALIAS))
+
+        self.logo1_label = tk.Label(config_entries, image=self.logo1)
+        self.logo1_label.grid(column=1, row=0)
+        self.logo2_label = tk.Label(config_entries, image=self.logo2)
+        self.logo2_label.grid(column=1, row=1)
+
+        tk.Label(config_entries, text="Match time").grid(column=0, row=2, sticky=tk.N)
+        tk.Label(config_entries, text="Timeout time").grid(column=0, row=3, sticky=tk.N)
+        tk.Label(config_entries, text="Player suspend time").grid(column=0, row=4, sticky=tk.N)
+        tk.Label(config_entries, text="min").grid(column=2, row=2, sticky=tk.N)
+        tk.Label(config_entries, text="sec").grid(column=2, row=3, sticky=tk.N)
+        tk.Label(config_entries, text="sec").grid(column=2, row=4, sticky=tk.N)
 
         # Buttons
         ###########################################################################################
@@ -111,6 +128,20 @@ class InitWindow:
                   command=lambda: self.save_configuration(self.config_save.get())).grid(column=1, row=2)
         tk.Button(configs, text="Load last config",
                   command=lambda: self.load_configuration(self.LAST_CONFIG)).grid(column=0, row=0, columnspan=2, sticky=tk.E)
+
+    def select_logo(self, team: int):
+        logo_file: str = filedialog.askopenfilename(parent=self.top_level)
+        if not logo_file:
+            return
+
+        if team == 1:
+            self.logo1 = ImageTk.PhotoImage(Image.open(logo_file).resize((40, 30), Image.ANTIALIAS))
+            self.logo1_label["image"] = self.logo1
+            self.logo1_to_return = logo_file
+        else:
+            self.logo2 = ImageTk.PhotoImage(Image.open(logo_file).resize((40, 30), Image.ANTIALIAS))
+            self.logo2_label["image"] = self.logo2
+            self.logo2_to_return = logo_file
 
     def get_current_entries(self) -> tuple:
         players1_entries = tuple(filter(lambda entry: entry.get(), self.team1_players))
@@ -150,6 +181,8 @@ class InitWindow:
         match = self.match.get()
         timeout = self.timeout.get()
         suspend = self.suspend.get()
+        logo1 = self.logo1_to_return
+        logo2 = self.logo2_to_return
 
         m = int(match)
         if m < 1:
@@ -167,14 +200,14 @@ class InitWindow:
         elif s > 300:
             suspend = "300"
 
-        return team1, team2, players1, players2, nums1, nums2, match, timeout, suspend
+        return team1, team2, players1, players2, nums1, nums2, match, timeout, suspend, logo1, logo2
 
     def apply_new_configuration(self):
         try:
-            team1, team2, players1, players2, nums1, nums2, match, timeout, suspend = self.get_current_entries()
+            team1, team2, players1, players2, nums1, nums2, match, timeout, suspend, logo1, logo2 = self.get_current_entries()
         except TypeError:  # If returned prematurely, with an error
             return
-        self.on_apply(Config(team1, team2, players1, players2, nums1, nums2, match, timeout, suspend))
+        self.on_apply(Config(team1, team2, players1, players2, nums1, nums2, match, timeout, suspend, logo1, logo2))
         self.save_configuration(self.LAST_CONFIG, message=False)
         self.top_level.destroy()
 
@@ -204,6 +237,9 @@ class InitWindow:
         timeout = f'{config["timeout"]:02d}'
         suspend = f'{config["suspend"]:02d}'
 
+        logo1: str = team1_object["logo"]
+        logo2: str = team2_object["logo"]
+
         # Erase everything first
         self.team1.delete(0, tk.END)
         self.team2.delete(0, tk.END)
@@ -216,6 +252,22 @@ class InitWindow:
         # Insert from config file
         self.team1.insert(0, team1)
         self.team2.insert(0, team2)
+
+        try:
+            self.logo1 = ImageTk.PhotoImage(Image.open(logo1).resize((40, 30), Image.ANTIALIAS))
+        except FileNotFoundError:
+            self.logo1 = ImageTk.PhotoImage(Image.open(self.DEFAULT_LOGO).resize((40, 30), Image.ANTIALIAS))
+            alert(self.top_level, f"Could not find image '{logo1}'")
+        self.logo1_label["image"] = self.logo1
+        self.logo1_to_return = logo1
+        try:
+            self.logo2 = ImageTk.PhotoImage(Image.open(logo2).resize((40, 30), Image.ANTIALIAS))
+        except FileNotFoundError:
+            self.logo2 = ImageTk.PhotoImage(Image.open(self.DEFAULT_LOGO).resize((40, 30), Image.ANTIALIAS))
+            alert(self.top_level, f"Could not find image '{logo2}'")
+        self.logo2_label["image"] = self.logo2
+        self.logo2_to_return = logo2
+
         for entry, insert in zip(self.team1_players, players1):
             entry.insert(0, insert)
         for entry, insert in zip(self.team2_players, players2):
@@ -235,11 +287,13 @@ class InitWindow:
             "teams": [
                 {
                     "name": str,
-                    "players": List[dict]
+                    "players": List[dict],
+                    "logo": str
                 },
                 {
                     "name": str,
-                    "players": List[dict]
+                    "players": List[dict],
+                    "logo": str
                 }
             ],
             "match": int,
@@ -249,12 +303,15 @@ class InitWindow:
 
         # Get config
         try:
-            team1, team2, players1, players2, nums1, nums2, match, timeout, suspend = self.get_current_entries()
+            team1, team2, players1, players2, nums1, nums2, match, timeout, suspend, logo1, logo2 = self.get_current_entries()
         except TypeError:  # If returned prematurely, with an error
             return
 
         config["teams"][0]["name"] = team1
         config["teams"][1]["name"] = team2
+
+        config["teams"][0]["logo"] = logo1
+        config["teams"][1]["logo"] = logo2
 
         players: List[dict] = []
         for name, number in zip(players1, nums1):

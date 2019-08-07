@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import List
+from PIL import Image
 
 
 @dataclass
@@ -13,3 +14,5 @@ class Config:
     match: int
     timeout: int
     suspend: int
+    logo1: Image
+    logo2: Image

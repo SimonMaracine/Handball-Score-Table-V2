@@ -24,7 +24,7 @@ class Timer:
             str: The current time
 
         """
-        return Timer._repr(self._time)
+        return Timer.repr(self._time)
 
     def get_raw_time(self) -> int:
         """Get the raw time
@@ -97,7 +97,7 @@ class Timer:
             self._going = False
             self._paused = False
             self._time = self._countdown
-            self._text_variable.set(Timer._repr(self._time))
+            self._text_variable.set(Timer.repr(self._time))
             try:
                 self._on_finish()
             except TypeError:
@@ -105,6 +105,21 @@ class Timer:
             print("Stopped timer")
         else:
             print("Timer is not going; nothing to stop")
+
+    @staticmethod
+    def repr(time: int) -> str:
+        """Represent time in a readable format
+
+        Args:
+            time (int): The number of seconds
+
+        Returns:
+            str: The representation of the time
+
+        """
+        minutes = time // 60
+        seconds = time % 60
+        return "{:02d}:{:02d}".format(minutes, seconds)
 
     def _run(self):
         """The loop of the timer
@@ -122,7 +137,7 @@ class Timer:
             start = default_timer()
             if self._going:
                 self._tick()
-            self._text_variable.set(Timer._repr(self._time))
+            self._text_variable.set(Timer.repr(self._time))
             if self._time <= 0:
                 self.stop()
             stop = default_timer()
@@ -132,21 +147,6 @@ class Timer:
 
     def _tick(self):
         self._time -= 1
-
-    @staticmethod
-    def _repr(time: int) -> str:
-        """Represent time in a readable format
-
-        Args:
-            time (int): The number of seconds
-
-        Returns:
-            str: The representation of the time
-
-        """
-        minutes = time // 60
-        seconds = time % 60
-        return "{:02d}:{:02d}".format(minutes, seconds)
 
 
 class PlayerTimer(Timer):
@@ -172,7 +172,7 @@ class PlayerTimer(Timer):
             start = default_timer()
             if self._going:
                 self._tick()
-            self._text_variable.set("{:02d} | {}".format(self._player.number, Timer._repr(self._time)))
+            self._text_variable.set("{:02d} | {}".format(self._player.number, Timer.repr(self._time)))
             if self._time <= 0:
                 self.stop()
             stop = default_timer()
@@ -184,7 +184,8 @@ class PlayerTimer(Timer):
         if self._going or self._paused:
             self._going = False
             self._paused = False
-            self._text_variable.set("{:02d} | 00:00".format(self._player.number))
+            self._time = self._countdown
+            self._text_variable.set("{:02d} | {}".format(self._player.number, Timer.repr(self._time)))
             print("Stopped timer")
             try:
                 if self._player.suspended:
@@ -222,7 +223,7 @@ class SelfFixTimer(Timer):
             self._time = self._countdown
             self._seconds_passed = 0
             self._accumulator = 0.0
-            self._text_variable.set(Timer._repr(self._time))
+            self._text_variable.set(Timer.repr(self._time))
             try:
                 self._on_finish()
             except TypeError:
@@ -242,7 +243,7 @@ class SelfFixTimer(Timer):
             start = default_timer()
             if self._going:
                 self._tick()
-            self._text_variable.set(Timer._repr(self._time))
+            self._text_variable.set(Timer.repr(self._time))
             if self._time <= 0:
                 self.stop()
 
@@ -317,7 +318,7 @@ class TimeOutTimer(Timer):
             start = default_timer()
             if self._going:
                 self._tick()
-            self._text_variable.set(Timer._repr(self._time))
+            self._text_variable.set(Timer.repr(self._time))
             if self._time == 10:
                 self._sound_wave.play()
             elif self._time <= 0:

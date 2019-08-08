@@ -17,7 +17,7 @@ class Player:
         self.yellow_cards = 0
         self.red_cards = 0
         self.timer = None
-        self.suspend_text_var = tk.StringVar(value="{:02d} | 00:00".format(self.number))
+        self.suspend_text_var = tk.StringVar(value="{:02d} | {}".format(self.number, PlayerTimer.repr(self.SUS_TIME)))
         self.text_var = tk.StringVar()
 
     def __repr__(self):

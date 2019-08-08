@@ -4,8 +4,6 @@ from timeit import default_timer
 
 import simpleaudio
 
-# todo timer start pause bug
-
 
 class Timer:
     """Class used to create timer objects for the round itself and for players"""
@@ -63,11 +61,14 @@ class Timer:
 
         """
         if not self._going:
-            self._going = True
-            self._paused = False
-            self._thread = threading.Thread(target=self._run, daemon=True)
-            self._thread.start()
-            print("Started timer")
+            if self._thread == threading.Thread or not self._thread.is_alive():
+                self._going = True
+                self._paused = False
+                self._thread = threading.Thread(target=self._run, daemon=True)
+                self._thread.start()
+                print("Started timer")
+            else:
+                print("Timer's thread is not done yet")
         else:
             print("Timer is already going")
 
@@ -294,12 +295,15 @@ class TimeOutTimer(Timer):
 
     def start(self):
         if not self._going:
-            self._going = True
-            self._paused = False
-            self._thread = threading.Thread(target=self._run, daemon=True)
-            self._thread.start()
-            self._sound_wave.play()
-            print("Started timer")
+            if self._thread == threading.Thread or not self._thread.is_alive():
+                self._going = True
+                self._paused = False
+                self._thread = threading.Thread(target=self._run, daemon=True)
+                self._thread.start()
+                self._sound_wave.play()
+                print("Started timer")
+            else:
+                print("Timer's thread is not done yet")
         else:
             print("Timer is already going")
 

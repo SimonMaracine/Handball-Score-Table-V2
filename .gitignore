@@ -6,6 +6,7 @@ dist/
 *.json
 !custom.json
 !settings.json
+!_last.json
 *.spec
 *.xcf
 Handball-Score-Table-V2

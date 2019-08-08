@@ -33,6 +33,7 @@ class SpectatorWindow:
 
         # Team logos
         ###########################################################################################
+
         logo1 = Image.open(self.logo1)
         logo1 = logo1.resize((int(118 * SCL), int(88 * SCL)), Image.ANTIALIAS)
         self.team1_logo = ImageTk.PhotoImage(logo1)
@@ -63,6 +64,9 @@ class SpectatorWindow:
         self.team1_suspended.grid(column=2, row=2)
         team1_logo.grid(column=0, row=1)
 
+        if self.logo1.endswith("__logo.png"):
+            team1_logo.destroy()
+
         # Team 2
         ###########################################################################################
         team2_name = tk.Frame(self.content, borderwidth=int(4 * SCL), relief="sunken", width=int(400 * SCL), height=int(100 * SCL))
@@ -84,6 +88,9 @@ class SpectatorWindow:
         team2_players.grid(column=4, row=2, columnspan=2)
         self.team2_suspended.grid(column=3, row=2)
         team2_logo.grid(column=5, row=1)
+
+        if self.logo2.endswith("__logo.png"):
+            team2_logo.destroy()
 
         # Init players
         ###########################################################################################

@@ -12,7 +12,7 @@ from src.alert_window import alert, info
 class InitWindow:
     PATH_TO_CONFIGS = join("data", "configs")
     LAST_CONFIG = "_last"
-    DEFAULT_LOGO = join("gfx", "logo.png")
+    DEFAULT_LOGO = join("gfx", "__logo.png")
 
     def __init__(self, top_level: tk.Toplevel, on_apply: Callable, **kwargs):
         self.top_level = top_level
@@ -103,8 +103,8 @@ class InitWindow:
 
         # Config labels
         ###########################################################################################
-        self.logo1 = ImageTk.PhotoImage(Image.open(join("gfx", "logo.png")).resize((40, 30), Image.ANTIALIAS))
-        self.logo2 = ImageTk.PhotoImage(Image.open(join("gfx", "logo.png")).resize((40, 30), Image.ANTIALIAS))
+        self.logo1 = ImageTk.PhotoImage(Image.open(join("gfx", "__logo.png")).resize((40, 30), Image.ANTIALIAS))
+        self.logo2 = ImageTk.PhotoImage(Image.open(join("gfx", "__logo.png")).resize((40, 30), Image.ANTIALIAS))
 
         self.logo1_label = tk.Label(config_entries, image=self.logo1)
         self.logo1_label.grid(column=1, row=0)

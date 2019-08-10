@@ -142,8 +142,8 @@ class MainApplication:
 
         # Logos
         ###########################################################################################
-        self.logo1 = join("gfx", "__logo.png")
-        self.logo2 = join("gfx", "__logo.png")
+        self.logo1 = join("data", "logos", "__logo.png")
+        self.logo2 = join("data", "logos", "__logo.png")
 
         # Main timer
         ###########################################################################################

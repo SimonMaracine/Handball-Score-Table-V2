@@ -1,4 +1,5 @@
 import threading
+from os.path import join
 from time import sleep
 from timeit import default_timer
 
@@ -289,7 +290,7 @@ class SelfFixTimer(Timer):
 
 class TimeOutTimer(Timer):
 
-    _sound_wave = simpleaudio.WaveObject.from_wave_file("sounds/sound.wav")
+    _sound_wave = simpleaudio.WaveObject.from_wave_file(join("data", "sounds", "sound.wav"))
 
     def __init__(self, text_variable, on_finish, countdown: int = 60):
         super().__init__(text_variable, on_finish, countdown)

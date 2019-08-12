@@ -295,6 +295,10 @@ class TimeOutTimer(Timer):
     def __init__(self, text_variable, on_finish, countdown: int = 60):
         super().__init__(text_variable, on_finish, countdown)
 
+    @classmethod
+    def play_sound(cls):
+        cls._sound_wave.play()
+
     def start(self):
         if not self._going:
             if self._thread == threading.Thread or not self._thread.is_alive():
@@ -302,7 +306,7 @@ class TimeOutTimer(Timer):
                 self._paused = False
                 self._thread = threading.Thread(target=self._run, daemon=True)
                 self._thread.start()
-                self._sound_wave.play()
+                self.play_sound()
                 print("Started timer")
             else:
                 print("Timer's thread is not done yet")
@@ -321,10 +325,10 @@ class TimeOutTimer(Timer):
                 self._tick()
             self._text_variable.set(Timer.repr(self._time))
             if self._time == 10:
-                self._sound_wave.play()
+                self.play_sound()
             elif self._time <= 0:
                 self.stop()
-                self._sound_wave.play()
+                self.play_sound()
             stop = default_timer()
 
             # f = default_timer()

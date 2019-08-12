@@ -23,7 +23,7 @@ class SpectatorWindow:
             SCL = 1.0
 
         self.top_level = top_level
-        self.top_level.minsize(width=int(1000 * SCL), height=int(660 * SCL))
+        self.top_level.minsize(width=int(1000 * SCL), height=int(670 * SCL))
         self.top_level.title("Handball Score Table")
         self.top_level.protocol("WM_DELETE_WINDOW", self.close)
         self.content = tk.Frame(self.top_level)
@@ -50,10 +50,10 @@ class SpectatorWindow:
         team1_score = tk.Frame(self.content, borderwidth=int(3 * SCL), relief="sunken")
         tk.Label(team1_score, textvariable=self.score_team1_var, font=f"Times, {int(35 * SCL)}").pack(padx=int(26 * SCL), pady=int(8 * SCL))
 
-        team1_players = tk.Frame(self.content, borderwidth=int(3 * SCL), relief="sunken", width=int(290 * SCL), height=int(415 * SCL))
+        team1_players = tk.Frame(self.content, borderwidth=int(3 * SCL), relief="sunken", width=int(290 * SCL), height=int(425 * SCL))
         team1_players.pack_propagate(False)
 
-        self.team1_suspended = tk.Frame(self.content, borderwidth=int(4 * SCL), relief="sunken", width=int(160 * SCL), height=int(405 * SCL))
+        self.team1_suspended = tk.Frame(self.content, borderwidth=int(4 * SCL), relief="sunken", width=int(160 * SCL), height=int(420 * SCL))
         self.team1_suspended.pack_propagate(False)
 
         team1_logo = tk.Label(self.content, image=self.team1_logo)
@@ -75,10 +75,10 @@ class SpectatorWindow:
         team2_score = tk.Frame(self.content, borderwidth=int(3 * SCL), relief="sunken")
         tk.Label(team2_score, textvariable=self.score_team2_var, font=f"Times, {int(35 * SCL)}").pack(padx=int(26 * SCL), pady=int(8 * SCL))
 
-        team2_players = tk.Frame(self.content, borderwidth=int(3 * SCL), relief="sunken", width=int(290 * SCL), height=int(415 * SCL))
+        team2_players = tk.Frame(self.content, borderwidth=int(3 * SCL), relief="sunken", width=int(290 * SCL), height=int(425 * SCL))
         team2_players.pack_propagate(False)
 
-        self.team2_suspended = tk.Frame(self.content, borderwidth=int(4 * SCL), relief="sunken", width=int(160 * SCL), height=int(405 * SCL))
+        self.team2_suspended = tk.Frame(self.content, borderwidth=int(4 * SCL), relief="sunken", width=int(160 * SCL), height=int(420 * SCL))
         self.team2_suspended.pack_propagate(False)
 
         team2_logo = tk.Label(self.content, image=self.team2_logo)

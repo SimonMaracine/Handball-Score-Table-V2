@@ -1,6 +1,7 @@
 import sys
-import tkinter as tk
 from os.path import join
+import tkinter as tk
+# import webbrowser
 
 import src.spectator_window as spec
 from src.timer import Timer, SelfFixTimer, TimeOutTimer
@@ -75,13 +76,6 @@ class MainApplication:
         ###########################################################################################
         self.team1 = Team("Home", 1)
         self.team2 = Team("Guest", 2)
-
-        # self.__players1 = (Player("Theodore", 16, self.team1, self.release_from_timer),
-        #                    Player("Simon", 17, self.team1, self.release_from_timer),
-        #                    Player("Jane", 18, self.team1, self.release_from_timer))
-        #
-        # self.__players2 = (Player("Paul", 29, self.team2, self.release_from_timer),
-        #                    Player("Andrew", 64, self.team2, self.release_from_timer))
 
         self.__selected_player = None
         self.suspended_players1 = []
@@ -552,14 +546,15 @@ class MainApplication:
     #         self.players2_list.insert(tk.LAST, "{} [{:02d}]".format(player.name, player.number))
 
     def open_spectator_window(self):
-        window = tk.Toplevel()
-        self.spectator_windows.append(window)
-        SpectatorWindow(window, players1=self.team1.players, players2=self.team2.players, time_var=self.time_var,
-                        round_num_var=self.round_num_var, score_team1_var=self.score_team1_var,
-                        score_team2_var=self.score_team2_var, name_team1_var=self.name_team1_var,
-                        name_team2_var=self.name_team2_var, time_out_var=self.time_out_var,
-                        logo1=self.logo1, logo2=self.logo2,
-                        to_give_back=self.take_from_window, spectator_windows=self.spectator_windows)
+        if len(self.spectator_windows) < 1:
+            window = tk.Toplevel()
+            self.spectator_windows.append(window)
+            SpectatorWindow(window, players1=self.team1.players, players2=self.team2.players, time_var=self.time_var,
+                            round_num_var=self.round_num_var, score_team1_var=self.score_team1_var,
+                            score_team2_var=self.score_team2_var, name_team1_var=self.name_team1_var,
+                            name_team2_var=self.name_team2_var, time_out_var=self.time_out_var,
+                            logo1=self.logo1, logo2=self.logo2,
+                            to_give_back=self.take_from_window, spectator_windows=self.spectator_windows)
 
     def open_init_window(self):
         window = tk.Toplevel()
@@ -573,6 +568,11 @@ class MainApplication:
     def open_preferences_window():
         window = tk.Toplevel()
         PreferencesWindow(window)
+
+    @staticmethod
+    def help():
+        # webbrowser.open()
+        pass
 
 
 def main():

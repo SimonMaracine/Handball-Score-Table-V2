@@ -266,6 +266,7 @@ class InitWindow:
             self.logo1 = ImageTk.PhotoImage(Image.open(logo1).resize((40, 30), Image.ANTIALIAS))
         except FileNotFoundError:
             self.logo1 = ImageTk.PhotoImage(Image.open(self.DEFAULT_LOGO).resize((40, 30), Image.ANTIALIAS))
+            logo1 = join("data", "logos", "__logo.png")
             alert(self.top_level, f"Could not find image '{logo1}'")
         self.logo1_label["image"] = self.logo1
         self.logo1_to_return = logo1
@@ -273,6 +274,7 @@ class InitWindow:
             self.logo2 = ImageTk.PhotoImage(Image.open(logo2).resize((40, 30), Image.ANTIALIAS))
         except FileNotFoundError:
             self.logo2 = ImageTk.PhotoImage(Image.open(self.DEFAULT_LOGO).resize((40, 30), Image.ANTIALIAS))
+            logo2 = join("data", "logos", "__logo.png")
             alert(self.top_level, f"Could not find image '{logo2}'")
         self.logo2_label["image"] = self.logo2
         self.logo2_to_return = logo2

@@ -1,5 +1,12 @@
+import logging
 import tkinter as tk
+
+from src.log import stream_handler
 from src.timer import PlayerTimer
+
+logger = logging.getLogger(__name__)
+logger.addHandler(stream_handler)
+logger.setLevel(logging.DEBUG)
 
 
 class Player:
@@ -83,7 +90,7 @@ class Player:
                 self.timer.start()
             self.suspended = True
         else:
-            print("Player already suspended")
+            logger.debug("Player already suspended")
 
     def release(self):
         """Release a player
@@ -95,7 +102,7 @@ class Player:
             self.suspended = False
             self.timer.stop()
         else:
-            print("Player is not suspended")
+            logger.debug("Player is not suspended")
 
     def can_suspend(self) -> bool:
         """Check if a player is not suspended

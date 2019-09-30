@@ -1,8 +1,14 @@
 import json
+import logging
 import tkinter as tk
 from os.path import join
 
+from src.log import stream_handler
 from src.alert_window import alert
+
+logger = logging.getLogger(__name__)
+logger.addHandler(stream_handler)
+logger.setLevel(logging.DEBUG)
 
 
 def create_settings_file():
@@ -35,7 +41,7 @@ class PreferencesWindow:
                 settings: dict = json.loads(raw_data)
                 scale = settings["spectator_scale"]
         except FileNotFoundError:
-            print("No settings file found")
+            logger.info("No settings file found")
             create_settings_file()
             scale = 1.0
 
@@ -58,7 +64,7 @@ class PreferencesWindow:
         try:
             scale = float(self.scale.get())
         except ValueError:
-            print("Scale must be a number")
+            logger.info("Scale must be a number")
             alert(self.top_level, "Scale must be a number")
             return
 

@@ -1,9 +1,16 @@
 import threading
+import logging
 from os.path import join
 from time import sleep
 from timeit import default_timer
 
 import simpleaudio
+
+from src.log import stream_handler
+
+logger = logging.getLogger(__name__)
+logger.addHandler(stream_handler)
+logger.setLevel(logging.DEBUG)
 
 
 class Timer:
@@ -67,11 +74,11 @@ class Timer:
                 self._paused = False
                 self._thread = threading.Thread(target=self._run, daemon=True)
                 self._thread.start()
-                print("Started timer")
+                logger.info("Started timer")
             else:
-                print("Timer's thread is not done yet")
+                logger.info("Timer's thread is not done yet")
         else:
-            print("Timer is already going")
+            logger.debug("Timer is already going")
 
     def pause(self):
         """Pause the timer
@@ -82,9 +89,9 @@ class Timer:
         if self._going and not self._paused:
             self._going = False
             self._paused = True
-            print("Paused timer")
+            logger.info("Paused timer")
         else:
-            print("Timer is not going; nothing to pause")
+            logger.debug("Timer is not going; nothing to pause")
 
     def stop(self):
         """Stop the timer
@@ -103,9 +110,9 @@ class Timer:
                 self._on_finish()
             except TypeError:
                 pass
-            print("Stopped timer")
+            logger.info("Stopped timer")
         else:
-            print("Timer is not going; nothing to stop")
+            logger.debug("Timer is not going; nothing to stop")
 
     @staticmethod
     def repr(time: int) -> str:
@@ -187,14 +194,14 @@ class PlayerTimer(Timer):
             self._paused = False
             self._time = self._countdown
             self._text_variable.set("{:02d} | {}".format(self._player.number, Timer.repr(self._time)))
-            print("Stopped timer")
+            logger.info("Stopped timer")
             try:
                 if self._player.suspended:
                     self._on_finish(self._player)
             except TypeError:
                 pass
         else:
-            print("Timer is not going; nothing to stop")
+            logger.debug("Timer is not going; nothing to stop")
 
 
 class SelfFixTimer(Timer):
@@ -213,9 +220,9 @@ class SelfFixTimer(Timer):
             self._paused = True
             self._seconds_passed = 0
             self._measuring = False
-            print("Paused timer")
+            logger.info("Paused timer")
         else:
-            print("Timer is not going; nothing to pause")
+            logger.debug("Timer is not going; nothing to pause")
 
     def stop(self):
         if self._going or self._paused:
@@ -229,9 +236,9 @@ class SelfFixTimer(Timer):
                 self._on_finish()
             except TypeError:
                 pass
-            print("Stopped timer")
+            logger.info("Stopped timer")
         else:
-            print("Timer is not going; nothing to stop")
+            logger.debug("Timer is not going; nothing to stop")
 
     def _run(self):
         start = 0
@@ -249,7 +256,7 @@ class SelfFixTimer(Timer):
                 self.stop()
 
             if self._going and self._time % 120 == 0:
-                print("Time: " + str(self._time))
+                logger.info("Time: " + str(self._time))
                 self._fix_time()
                 self._start_measure()
             stop = default_timer()
@@ -266,19 +273,19 @@ class SelfFixTimer(Timer):
         if self._measuring:
             self._measure_stop = default_timer()
             seconds_actually_passed: float = self._measure_stop - self._measure_start  # How many seconds actually passed in
-            print("Actually passed: " + str(seconds_actually_passed))                  # those presumably 2 minutes
-            print("Ticks passed: " + str(self._seconds_passed))
+            logger.info("Actually passed: " + str(seconds_actually_passed))                  # those presumably 2 minutes
+            logger.info("Ticks passed: " + str(self._seconds_passed))
             delta: float = seconds_actually_passed - self._seconds_passed  # The difference should be 1 - 2 seconds
-            print("Delta: " + str(delta))
+            logger.info("Delta: " + str(delta))
 
             self._accumulator += delta
-            print("Accumulator: " + str(self._accumulator))
+            logger.info("Accumulator: " + str(self._accumulator))
 
             if self._accumulator >= 1:
                 sec_forward = int(self._accumulator)
                 self._time -= sec_forward
                 self._accumulator -= sec_forward
-                print("Forward {} second(s)".format(sec_forward))
+                logger.info("Forward {} second(s)".format(sec_forward))
 
             self._measuring = False
             self._seconds_passed = 0
@@ -303,11 +310,11 @@ class TimeOutTimer(Timer):
                 self._thread = threading.Thread(target=self._run, daemon=True)
                 self._thread.start()
                 self._sound_wave.play()
-                print("Started timer")
+                logger.info("Started timer")
             else:
-                print("Timer's thread is not done yet")
+                logger.debug("Timer's thread is not done yet")
         else:
-            print("Timer is already going")
+            logger.debug("Timer is already going")
 
     def _run(self):
         start = 0

@@ -1,6 +1,7 @@
 import json
 import tkinter as tk
 from os.path import join
+
 from PIL import Image, ImageTk
 
 from src.preferences_window import create_settings_file

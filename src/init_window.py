@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import filedialog
 from os.path import join
 from typing import List, Callable
+
 from PIL import Image, ImageTk
 
 from src.config_object import Config

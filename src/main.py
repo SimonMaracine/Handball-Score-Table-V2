@@ -1,8 +1,10 @@
 import sys
 from os.path import join
 import tkinter as tk
+import logging
 # import webbrowser
 
+from src.log import stream_handler
 import src.spectator_window as spec
 from src.timer import Timer, SelfFixTimer, TimeOutTimer
 from src.spectator_window import SpectatorWindow
@@ -11,6 +13,10 @@ from src.preferences_window import PreferencesWindow
 from src.player import Player
 from src.team import Team
 from src.alert_window import ask, info
+
+logger = logging.getLogger(__name__)
+logger.addHandler(stream_handler)
+logger.setLevel(logging.DEBUG)
 
 if sys.platform == "linux":
     MainTimer = Timer
@@ -235,7 +241,7 @@ class MainApplication:
 
         assert selected_player is not None, "Could not find player " + player_name_number
         self.__selected_player = selected_player
-        print(self.__selected_player)
+        logger.debug(self.__selected_player)
 
         self.player_selected_var.set("Player selected: " + self.__selected_player.name)
         self.selected_scores_var.set("Score: " + str(self.__selected_player.scores))
@@ -362,7 +368,7 @@ class MainApplication:
                         self.suspended_players1.remove(tuple_sus)
                         break
                 else:
-                    print("Could not find " + str(self.__selected_player) + " in suspended players")
+                    logger.info("Could not find " + str(self.__selected_player) + " in suspended players")
             else:
                 for tuple_sus in self.suspended_players2:
                     # print(tuple_sus[0]["text"][0:2])
@@ -376,7 +382,7 @@ class MainApplication:
                         self.suspended_players2.remove(tuple_sus)
                         break
                 else:
-                    print("Could not find " + str(self.__selected_player) + " in suspended players")
+                    logger.info("Could not find " + str(self.__selected_player) + " in suspended players")
 
     def release_from_timer(self, player: Player):
         if player.team.order == 1:
@@ -392,7 +398,7 @@ class MainApplication:
                     self.suspended_players1.remove(tuple_sus)
                     break
             else:
-                print("Could not find " + str(player) + " in suspended players")
+                logger.info("Could not find " + str(player) + " in suspended players")
         else:
             for tuple_sus in self.suspended_players2:
                 # print(tuple_sus[0]["text"][0:2])
@@ -406,7 +412,7 @@ class MainApplication:
                     self.suspended_players2.remove(tuple_sus)
                     break
             else:
-                print("Could not find " + str(player) + " in suspended players")
+                logger.info("Could not find " + str(player) + " in suspended players")
 
     def disqualify(self):
         if self.__selected_player is None:

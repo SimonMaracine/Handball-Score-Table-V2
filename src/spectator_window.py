@@ -1,10 +1,16 @@
 import json
+import logging
 import tkinter as tk
 from os.path import join
 
 from PIL import Image, ImageTk
 
+from src.log import stream_handler
 from src.preferences_window import create_settings_file
+
+logger = logging.getLogger(__name__)
+logger.addHandler(stream_handler)
+logger.setLevel(logging.DEBUG)
 
 SCL = 1.0
 
@@ -19,7 +25,7 @@ class SpectatorWindow:
                 settings: dict = json.loads(raw_data)
                 SCL = settings["spectator_scale"]
         except FileNotFoundError:
-            print("No settings file found")
+            logger.info("No settings file found")
             create_settings_file()
             SCL = 1.0
 

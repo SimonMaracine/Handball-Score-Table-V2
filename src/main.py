@@ -4,7 +4,7 @@ import tkinter as tk
 import logging
 # import webbrowser
 
-from src.log import stream_handler
+import src.log
 import src.spectator_window as spec
 from src.timer import Timer, SelfFixTimer, TimeOutTimer
 from src.spectator_window import SpectatorWindow
@@ -14,8 +14,7 @@ from src.player import Player
 from src.team import Team
 from src.alert_window import ask, info
 
-logger = logging.getLogger(__name__)
-logger.addHandler(stream_handler)
+logger = src.log.get_logger(__name__)
 logger.setLevel(logging.DEBUG)
 
 if sys.platform == "linux":

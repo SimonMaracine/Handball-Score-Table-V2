@@ -1,11 +1,10 @@
 import logging
 import tkinter as tk
 
-from src.log import stream_handler
+import src.log
 from src.timer import PlayerTimer
 
-logger = logging.getLogger(__name__)
-logger.addHandler(stream_handler)
+logger = src.log.get_logger(__name__)
 logger.setLevel(logging.DEBUG)
 
 

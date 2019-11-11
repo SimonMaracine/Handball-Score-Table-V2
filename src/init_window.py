@@ -7,12 +7,11 @@ from typing import List, Callable
 
 from PIL import Image, ImageTk
 
-from src.log import stream_handler
+import src.log
 from src.config_object import Config
 from src.alert_window import alert, info
 
-logger = logging.getLogger(__name__)
-logger.addHandler(stream_handler)
+logger = src.log.get_logger(__name__)
 logger.setLevel(logging.DEBUG)
 
 

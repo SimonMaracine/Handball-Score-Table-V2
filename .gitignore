@@ -10,3 +10,7 @@ dist/
 *.spec
 *.xcf
 Handball-Score-Table-V2
+*.cfg
+bin/
+lib/
+lib64/

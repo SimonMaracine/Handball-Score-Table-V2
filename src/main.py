@@ -13,6 +13,7 @@ from src.preferences_window import PreferencesWindow
 from src.player import Player
 from src.team import Team
 from src.alert_window import ask, info
+from src.about_window import AboutWindow
 
 logger = src.log.get_logger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -60,7 +61,7 @@ class MainApplication:
         # Help menu
         ###########################################################################################
         help_menu = tk.Menu(menu_bar)
-        help_menu.add_command(label="About", command=None, state="disabled")
+        help_menu.add_command(label="About", command=self.about)
         menu_bar.add_cascade(label="Help", menu=help_menu)
 
         # Containers
@@ -500,8 +501,9 @@ class MainApplication:
         self.score_team2_var.set("0")
         self.round_num_var.set("1")
         # self.__selected_player = None
-        for window in self.spectator_windows:
+        for window in MainApplication.spectator_windows:
             window.destroy()
+            MainApplication.spectator_windows.clear()
 
         # Init teams
         self.team1 = Team(config.team1, 1)
@@ -551,15 +553,17 @@ class MainApplication:
     #         self.players2_list.insert(tk.LAST, "{} [{:02d}]".format(player.name, player.number))
 
     def open_spectator_window(self):
-        if len(self.spectator_windows) < 1:
+        if len(MainApplication.spectator_windows) < 1:
             window = tk.Toplevel()
-            self.spectator_windows.append(window)
+            MainApplication.spectator_windows.append(window)
             SpectatorWindow(window, players1=self.team1.players, players2=self.team2.players, time_var=self.time_var,
                             round_num_var=self.round_num_var, score_team1_var=self.score_team1_var,
                             score_team2_var=self.score_team2_var, name_team1_var=self.name_team1_var,
                             name_team2_var=self.name_team2_var, time_out_var=self.time_out_var,
                             logo1=self.logo1, logo2=self.logo2,
-                            to_give_back=self.take_from_window, spectator_windows=self.spectator_windows)
+                            to_give_back=self.take_from_window, spectator_windows=MainApplication.spectator_windows)
+        else:
+            info(self.root, "There can be only one spectator window open")
 
     def open_init_window(self):
         window = tk.Toplevel()
@@ -578,6 +582,11 @@ class MainApplication:
     def help():
         # webbrowser.open()
         pass
+
+    @staticmethod
+    def about():
+        window = tk.Toplevel()
+        AboutWindow(window)
 
 
 def main():

@@ -17,7 +17,7 @@ logger.setLevel(logging.DEBUG)
 
 class InitWindow:
     PATH_TO_CONFIGS = join("data", "configs")
-    LAST_CONFIG = "_last"
+    LAST_CONFIG = "__last"
     DEFAULT_LOGO = join("data", "logos", "__logo.png")
 
     def __init__(self, top_level: tk.Toplevel, on_apply: Callable, **kwargs):
@@ -136,7 +136,7 @@ class InitWindow:
                   command=lambda: self.load_configuration(self.LAST_CONFIG)).grid(column=0, row=0, columnspan=2, sticky=tk.E)
 
     def select_logo(self, team: int):
-        logo_file: str = filedialog.askopenfilename(parent=self.top_level)
+        logo_file: str = filedialog.askopenfilename(parent=self.top_level, title="Open Image")
         if not logo_file:
             return
 
@@ -271,17 +271,19 @@ class InitWindow:
         try:
             self.logo1 = ImageTk.PhotoImage(Image.open(logo1).resize((40, 30), Image.ANTIALIAS))
         except FileNotFoundError:
+            alert(self.top_level, f"Could not find image '{logo1}'")
+            logger.warning(f"Could not find image '{logo1}'")
             self.logo1 = ImageTk.PhotoImage(Image.open(self.DEFAULT_LOGO).resize((40, 30), Image.ANTIALIAS))
             logo1 = join("data", "logos", "__logo.png")
-            alert(self.top_level, f"Could not find image '{logo1}'")
         self.logo1_label["image"] = self.logo1
         self.logo1_to_return = logo1
         try:
             self.logo2 = ImageTk.PhotoImage(Image.open(logo2).resize((40, 30), Image.ANTIALIAS))
         except FileNotFoundError:
+            alert(self.top_level, f"Could not find image '{logo2}'")
+            logger.warning(f"Could not find image '{logo2}'")
             self.logo2 = ImageTk.PhotoImage(Image.open(self.DEFAULT_LOGO).resize((40, 30), Image.ANTIALIAS))
             logo2 = join("data", "logos", "__logo.png")
-            alert(self.top_level, f"Could not find image '{logo2}'")
         self.logo2_label["image"] = self.logo2
         self.logo2_to_return = logo2
 
@@ -347,7 +349,7 @@ class InitWindow:
         config["suspend"] = int(suspend)
 
         with open(join(self.PATH_TO_CONFIGS, json_file + ".json"), "w") as file:
-            json.dump(config, file)
+            json.dump(config, file, sort_keys=True, indent=2)
 
         logging.info(f'Saved configuration "{json_file}"')
         if message:

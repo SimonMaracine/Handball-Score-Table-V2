@@ -1,5 +1,8 @@
 class Team:
-    """Class representing a team"""
+    """Class representing a team
+
+    Holds all the players, i.e. all the data.
+    """
 
     def __init__(self, name: str, order: int):
         self.name = name

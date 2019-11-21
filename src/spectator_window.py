@@ -29,7 +29,6 @@ class SpectatorWindow:
 
         # Team logos
         ###########################################################################################
-
         logo1 = Image.open(self.logo1)
         logo1 = logo1.resize((int(118 * SCL), int(88 * SCL)), Image.ANTIALIAS)
         self.team1_logo = ImageTk.PhotoImage(logo1)

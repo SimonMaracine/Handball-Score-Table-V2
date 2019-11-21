@@ -16,10 +16,10 @@ class PreferencesWindow:
 
     def __init__(self, top_level: tk.Toplevel):
         self.top_level = top_level
-        self.top_level.minsize(width=320, height=240)
+        self.top_level.minsize(width=270, height=200)
         self.top_level.title("Preferences")
         self.content = tk.Frame(self.top_level)
-        self.content.grid(column=0, row=0, padx=10, pady=10)
+        self.content.pack(padx=10, pady=10, expand=True)
 
         # Containers
         ###########################################################################################
@@ -27,11 +27,10 @@ class PreferencesWindow:
         container2 = tk.Frame(self.content)
 
         container1.grid(column=0, row=0, pady=12)
-        container2.grid(column=0, row=1, padx=20)
+        container2.grid(column=0, row=1, pady=20)
 
         # Settings
         ###########################################################################################
-
         scale, sounds = get_settings()
 
         self.scale = tk.StringVar(container1, value=scale)

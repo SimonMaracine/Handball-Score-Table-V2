@@ -26,7 +26,7 @@ class InitWindow:
         self.top_level.minsize(width=670, height=420)
         self.top_level.title("New Match")
         self.content = tk.Frame(self.top_level)
-        self.content.pack(side="top", fill="both", expand=True, padx=10, pady=10)
+        self.content.pack(padx=10, pady=10, expand=True)
         for key, value in kwargs.items():
             self.__setattr__(key, value)
 

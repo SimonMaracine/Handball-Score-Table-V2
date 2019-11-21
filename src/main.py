@@ -36,19 +36,13 @@ class MainApplication:
         menu_bar = tk.Menu()
         self.root.config(menu=menu_bar)
         self.content = tk.Frame(self.root, padx=8, pady=8)
-        self.content.grid(column=0, row=0, sticky=(tk.E, tk.W))
-
-        self.content.columnconfigure(0, weight=2)
-        self.content.columnconfigure(1, weight=2)
-        # self.content.rowconfigure(0, weight=1)
-        self.root.columnconfigure(0, weight=1)
-        self.root.rowconfigure(0, weight=1)
+        self.content.pack(expand=True)
 
         # File menu
         ###########################################################################################
         file_menu = tk.Menu(menu_bar)
         file_menu.add_command(label="New Match", state="normal", command=self.open_init_window)
-        file_menu.add_command(label="Open spectator window", command=self.open_spectator_window)
+        file_menu.add_command(label="Open Spectator Window", command=self.open_spectator_window)
         file_menu.add_command(label="Exit", command=self.root.quit)  # TODO warn before exit
         menu_bar.add_cascade(label="File", menu=file_menu)
 
@@ -73,11 +67,7 @@ class MainApplication:
 
         container1.grid(column=0, row=0, rowspan=3)
         container2.grid(column=0, row=2)
-        container3.grid(column=1, row=1, sticky=(tk.N, tk.S))
-
-        container3.rowconfigure(0, weight=3)
-        container3.rowconfigure(1, weight=3)
-        container3.rowconfigure(2, weight=3)
+        container3.grid(column=1, row=1, padx=30)
 
         # Init teams and players
         ###########################################################################################
@@ -152,7 +142,7 @@ class MainApplication:
         self.time_var.set(self.timer.get_time())
 
         main_timer = tk.Frame(container3, borderwidth=5, relief="sunken")
-        self.timer_text = tk.Label(main_timer, textvariable=self.time_var, font="Times, 70")
+        self.timer_text = tk.Label(main_timer, textvariable=self.time_var, font="Times, 67")
         self.timer_text.grid(column=0, row=0, columnspan=3)
 
         main_timer.grid(column=0, row=0, columnspan=2)
@@ -165,7 +155,6 @@ class MainApplication:
         tk.Label(match_round, textvariable=self.round_num_var, font="Times, 50").pack(padx=30, pady=5)
 
         match_round.grid(column=0, row=0, rowspan=2, padx=8)
-
         match.grid(column=0, row=1, pady=10)
 
         # Timeout timer

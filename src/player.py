@@ -1,5 +1,6 @@
 import logging
 import tkinter as tk
+from typing import Optional, Callable
 
 import src.log
 from src.timer import PlayerTimer
@@ -12,19 +13,24 @@ class Player:
     """Class representing a player"""
     SUS_TIME = 120
 
-    def __init__(self, name: str, number: int, team, timer_on_finish):
+    def __init__(self, name: str, number: int, team, timer_on_finish: Callable):
         self.name = name
         self.number = number
         self.team = team
         self._timer_on_finish = timer_on_finish
+
         self.scores = 0
         self.suspended = False
         self.disqualified = False
         self.yellow_cards = 0
         self.red_cards = 0
-        self.timer = None
+
+        self.timer: Optional[PlayerTimer] = None
         self.suspend_text_var = tk.StringVar(value="{:02d} | {}".format(self.number, PlayerTimer.repr(self.SUS_TIME)))
         self.text_var = tk.StringVar()
+
+        self.main_label: Optional[tk.Label] = None
+        self.spec_label: Optional[tk.Label] = None
 
     def __repr__(self):
         return "Player {} [{:02d}] - {}".format(self.name, self.number, self.team)

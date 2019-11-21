@@ -3,10 +3,12 @@ import logging
 from os.path import join
 from time import sleep
 from timeit import default_timer
+from typing import Callable, Union
 
 import simpleaudio
 
 import src.log
+from src.settings import get_settings
 
 logger = src.log.get_logger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -15,7 +17,7 @@ logger.setLevel(logging.DEBUG)
 class Timer:
     """Class used to create timer objects for the round itself and for players"""
 
-    def __init__(self, text_variable, on_finish, countdown: int = 60):
+    def __init__(self, text_variable, on_finish: Union[Callable, None], countdown: int = 60):
         self._text_variable = text_variable
         self._on_finish = on_finish
         self._countdown = countdown
@@ -165,7 +167,7 @@ class PlayerTimer(Timer):
     the player is suspended and it resets the time differently.
 
     """
-    def __init__(self, text_variable, on_finish, player, countdown: int = 60):
+    def __init__(self, text_variable, on_finish: Callable, player, countdown: int = 60):
         super().__init__(text_variable, on_finish, countdown)
         self._player = player
 
@@ -205,7 +207,7 @@ class PlayerTimer(Timer):
 
 class SelfFixTimer(Timer):
 
-    def __init__(self, text_variable, on_finish, countdown: int = 60):
+    def __init__(self, text_variable, on_finish: Union[Callable, None], countdown: int = 60):
         super().__init__(text_variable, on_finish, countdown)
         self._measuring = False
         self._measure_start = 0.0
@@ -297,9 +299,11 @@ class SelfFixTimer(Timer):
 class TimeOutTimer(Timer):
 
     _sound_wave = simpleaudio.WaveObject.from_wave_file(join("data", "sounds", "sound.wav"))
+    _sound_enabled: bool
 
-    def __init__(self, text_variable, on_finish, countdown: int = 60):
+    def __init__(self, text_variable, on_finish: Callable, countdown: int = 60):
         super().__init__(text_variable, on_finish, countdown)
+        TimeOutTimer.update()
 
     def start(self):
         if not self._going:
@@ -308,7 +312,7 @@ class TimeOutTimer(Timer):
                 self._paused = False
                 self._thread = threading.Thread(target=self._run, daemon=True)
                 self._thread.start()
-                self._sound_wave.play()
+                self._play_sound()
                 logger.info("Started timer")
             else:
                 logger.debug("Timer's thread is not done yet")
@@ -327,11 +331,24 @@ class TimeOutTimer(Timer):
                 self._tick()
             self._text_variable.set(Timer.repr(self._time))
             if self._time == 10:
-                self._sound_wave.play()
+                self._play_sound()
             elif self._time <= 0:
                 self.stop()
-                self._sound_wave.play()
+                self._play_sound()
             stop = default_timer()
 
             # f = default_timer()
             # print(f - s)
+
+    def _play_sound(self):
+        if TimeOutTimer._sound_enabled:
+            self._sound_wave.play()
+
+    @classmethod
+    def update(cls):
+        cls._sound_enabled = TimeOutTimer._get_sound_enabled()
+
+    @staticmethod
+    def _get_sound_enabled() -> bool:
+        _, sounds = get_settings()
+        return sounds

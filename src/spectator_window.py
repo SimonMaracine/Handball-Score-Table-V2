@@ -1,12 +1,10 @@
-import json
 import logging
 import tkinter as tk
-from os.path import join
 
 from PIL import Image, ImageTk
 
 import src.log
-from src.preferences_window import create_settings_file
+from src.settings import get_settings
 
 logger = src.log.get_logger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -17,16 +15,8 @@ SCL = 1.0
 class SpectatorWindow:
 
     def __init__(self, top_level: tk.Toplevel, **kwargs):
-        try:
-            with open(join("data", "settings.json"), "r") as file:
-                global SCL
-                raw_data = file.read()
-                settings: dict = json.loads(raw_data)
-                SCL = settings["spectator_scale"]
-        except FileNotFoundError:
-            logger.info("No settings file found")
-            create_settings_file()
-            SCL = 1.0
+        global SCL
+        SCL, _ = get_settings()
 
         self.top_level = top_level
         self.top_level.minsize(width=int(1000 * SCL), height=int(670 * SCL))

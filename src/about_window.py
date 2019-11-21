@@ -10,7 +10,7 @@ class AboutWindow:
         self.content = tk.Frame(self.top_level)
         self.content.pack(padx=10, pady=20, expand=True)
 
-        tk.Label(self.content, text="Handball Score Table-V2", font="Times, 18").grid(column=0, row=0, sticky=tk.N)
+        tk.Label(self.content, text="Handball Score Table V2", font="Times, 18").grid(column=0, row=0, sticky=tk.N)
         tk.Label(self.content, text="Made by Simon Mărăcine", font="Times, 10").grid(column=0, row=1)
 
         ok = tk.Frame(self.content)

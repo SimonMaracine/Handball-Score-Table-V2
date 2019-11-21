@@ -1,7 +1,8 @@
 import sys
-from os.path import join
-import tkinter as tk
 import logging
+import tkinter as tk
+from os.path import join
+from typing import Optional, List
 # import webbrowser
 
 import src.log
@@ -46,9 +47,9 @@ class MainApplication:
         # File menu
         ###########################################################################################
         file_menu = tk.Menu(menu_bar)
-        file_menu.add_command(label="New", state="normal", command=self.open_init_window)
+        file_menu.add_command(label="New Match", state="normal", command=self.open_init_window)
         file_menu.add_command(label="Open spectator window", command=self.open_spectator_window)
-        file_menu.add_command(label="Exit", command=self.root.quit)
+        file_menu.add_command(label="Exit", command=self.root.quit)  # TODO warn before exit
         menu_bar.add_cascade(label="File", menu=file_menu)
 
         # Edit menu
@@ -82,10 +83,9 @@ class MainApplication:
         ###########################################################################################
         self.team1 = Team("Home", 1)
         self.team2 = Team("Guest", 2)
-
-        self.__selected_player = None
-        self.suspended_players1 = []
-        self.suspended_players2 = []
+        self.__selected_player: Optional[Player] = None
+        self.suspended_players1: List[Player] = []
+        self.suspended_players2: List[Player] = []
         self.is_time_out = False
 
         # Team 1
@@ -234,13 +234,7 @@ class MainApplication:
             return
         # print(player_name_number)
 
-        selected_player = None
-        for player in self.team1.players + self.team2.players:
-            if player_name_number == "{} [{:02d}]".format(player.name, player.number):
-                selected_player = player
-
-        assert selected_player is not None, "Could not find player " + player_name_number
-        self.__selected_player = selected_player
+        self.__selected_player = self.get_selected_player(player_name_number)
         logger.debug(self.__selected_player)
 
         self.player_selected_var.set("Player selected: " + self.__selected_player.name)
@@ -248,6 +242,16 @@ class MainApplication:
         self.selected_cards_var.set("Cards: " +
                                     "{} yellow, ".format(self.__selected_player.yellow_cards) +
                                     "{} red".format(self.__selected_player.red_cards))
+
+    def get_selected_player(self, player_name_number: str) -> Player:
+        selected_player: Optional[Player] = None
+
+        for player in self.team1.players + self.team2.players:
+            if player_name_number == "{} [{:02d}]".format(player.name, player.number):
+                selected_player = player
+
+        assert selected_player is not None, "Could not find player " + player_name_number
+        return selected_player
 
     def score_up(self):
         if self.__selected_player is None:
@@ -322,31 +326,41 @@ class MainApplication:
                 self.__selected_player.suspend()
 
             if self.__selected_player.team.order == 1:
-                suspended = tk.Label(self.team1_suspended, textvariable=self.__selected_player.suspend_text_var,
-                                     font="Times, 12")
-                spec_suspended = None
-                try:
-                    spec_suspended = tk.Label(self.spec_team1_suspended, textvariable=self.__selected_player.suspend_text_var,
-                                              font=f"Times, {int(13 * spec.SCL)}")
-                except Exception:
-                    pass
-                self.suspended_players1.append((suspended, spec_suspended))
-            else:
-                suspended = tk.Label(self.team2_suspended, textvariable=self.__selected_player.suspend_text_var,
-                                     font="Times, 12")
-                spec_suspended = None
-                try:
-                    spec_suspended = tk.Label(self.spec_team2_suspended, textvariable=self.__selected_player.suspend_text_var,
-                                              font=f"Times, {int(13 * spec.SCL)}")
-                except Exception:
-                    pass
-                self.suspended_players2.append((suspended, spec_suspended))
+                self.put_suspended_player_on_main(1)
+                self.put_suspended_player_on_spec(1)
 
-            suspended.pack(padx=10, pady=0)
-            try:
-                spec_suspended.pack(padx=int(24 * spec.SCL), pady=0)
-            except AttributeError:
-                pass
+                self.suspended_players1.append(self.__selected_player)
+            else:
+                self.put_suspended_player_on_main(2)
+                self.put_suspended_player_on_spec(2)
+
+                self.suspended_players2.append(self.__selected_player)
+
+    def put_suspended_player_on_main(self, team: int) -> tk.Label:
+        suspended = tk.Label(self.team1_suspended if team == 1 else self.team2_suspended,
+                             textvariable=self.__selected_player.suspend_text_var,
+                             font="Times, 12")
+
+        suspended.pack(padx=10, pady=0)
+
+        self.__selected_player.main_label = suspended
+        return suspended
+
+    def put_suspended_player_on_spec(self, team: int):
+        try:
+            spec_suspended = tk.Label(self.spec_team1_suspended if team == 1 else self.spec_team2_suspended,
+                                      textvariable=self.__selected_player.suspend_text_var,
+                                      font=f"Times, {int(13 * spec.SCL)}")
+        except Exception:
+            spec_suspended = None
+
+        try:
+            spec_suspended.pack(padx=int(24 * spec.SCL), pady=0)
+        except AttributeError:
+            pass
+
+        self.__selected_player.spec_label = spec_suspended
+        return spec_suspended
 
     def release(self):
         if self.__selected_player is None:
@@ -356,60 +370,60 @@ class MainApplication:
             return
         if self.__selected_player.can_release():
             if self.__selected_player.team.order == 1:
-                for tuple_sus in self.suspended_players1:
+                for player in self.suspended_players1:
                     # print(tuple_sus[0]["text"][0:2])
-                    if int((tuple_sus[0]["text"])[0:2]) == self.__selected_player.number:
+                    if int((player.main_label["text"])[0:2]) == self.__selected_player.number:
                         self.__selected_player.release()
-                        tuple_sus[0].destroy()
+                        player.main_label.destroy()
                         try:
-                            tuple_sus[1].destroy()
+                            player.spec_label.destroy()
                         except AttributeError:
                             pass
-                        self.suspended_players1.remove(tuple_sus)
+                        self.suspended_players1.remove(player)
                         break
                 else:
                     logger.info("Could not find " + str(self.__selected_player) + " in suspended players")
             else:
-                for tuple_sus in self.suspended_players2:
+                for player in self.suspended_players2:
                     # print(tuple_sus[0]["text"][0:2])
-                    if int((tuple_sus[0]["text"])[0:2]) == self.__selected_player.number:
+                    if int((player.main_label["text"])[0:2]) == self.__selected_player.number:
                         self.__selected_player.release()
-                        tuple_sus[0].destroy()
+                        player.main_label.destroy()
                         try:
-                            tuple_sus[1].destroy()
+                            player.spec_label.destroy()
                         except AttributeError:
                             pass
-                        self.suspended_players2.remove(tuple_sus)
+                        self.suspended_players2.remove(player)
                         break
                 else:
                     logger.info("Could not find " + str(self.__selected_player) + " in suspended players")
 
     def release_from_timer(self, player: Player):
         if player.team.order == 1:
-            for tuple_sus in self.suspended_players1:
+            for player in self.suspended_players1:
                 # print(tuple_sus[0]["text"][0:2])
-                if int((tuple_sus[0]["text"])[0:2]) == player.number:
+                if int((player.main_label["text"])[0:2]) == player.number:
                     player.release()
-                    tuple_sus[0].destroy()
+                    player.main_label.destroy()
                     try:
-                        tuple_sus[1].destroy()
+                        player.spec_label.destroy()
                     except AttributeError:
                         pass
-                    self.suspended_players1.remove(tuple_sus)
+                    self.suspended_players1.remove(player)
                     break
             else:
                 logger.info("Could not find " + str(player) + " in suspended players")
         else:
-            for tuple_sus in self.suspended_players2:
+            for player in self.suspended_players2:
                 # print(tuple_sus[0]["text"][0:2])
-                if int((tuple_sus[0]["text"])[0:2]) == player.number:
+                if int((player.main_label["text"])[0:2]) == player.number:
                     player.release()
-                    tuple_sus[0].destroy()
+                    player.main_label.destroy()
                     try:
-                        tuple_sus[1].destroy()
+                        player.spec_label.destroy()
                     except AttributeError:
                         pass
-                    self.suspended_players2.remove(tuple_sus)
+                    self.suspended_players2.remove(player)
                     break
             else:
                 logger.info("Could not find " + str(player) + " in suspended players")
@@ -418,7 +432,7 @@ class MainApplication:
         if self.__selected_player is None:
             return
         if self.__selected_player.disqualified:
-            info(self.root, f"{self.__selected_player.name} is already disqualified")
+            info(self.root, f"{self.__selected_player.name} is already disqualified.")
             return
         if ask(self.root, f"Are you sure you want to disqualify {self.__selected_player.name}?"):
             self.release()
@@ -562,8 +576,20 @@ class MainApplication:
                             name_team2_var=self.name_team2_var, time_out_var=self.time_out_var,
                             logo1=self.logo1, logo2=self.logo2,
                             to_give_back=self.take_from_window, spectator_windows=MainApplication.spectator_windows)
+
+            currently_selected_player = self.__selected_player
+            for suspended_player in self.suspended_players1 + self.suspended_players2:
+                self.__selected_player = suspended_player
+                self.put_suspended_player_on_spec(self.__selected_player.team.order)
+            self.__selected_player = currently_selected_player
+
+            if self.is_time_out:
+                try:
+                    self.spec_time_out()
+                except Exception:
+                    pass
         else:
-            info(self.root, "There can be only one spectator window open")
+            info(self.root, "There can only be one spectator window open.")
 
     def open_init_window(self):
         window = tk.Toplevel()

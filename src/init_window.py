@@ -144,7 +144,7 @@ class InitWindow:
             try:
                 self.logo1 = ImageTk.PhotoImage(Image.open(logo_file).resize((40, 30), Image.ANTIALIAS))
             except OSError:
-                alert(self.top_level, "You must select an image of format PNG, GIF or JPG")
+                alert(self.top_level, "You must select an image of format PNG, GIF or JPG.")
                 return
             self.logo1_label["image"] = self.logo1
             self.logo1_to_return = logo_file
@@ -152,7 +152,7 @@ class InitWindow:
             try:
                 self.logo2 = ImageTk.PhotoImage(Image.open(logo_file).resize((40, 30), Image.ANTIALIAS))
             except OSError:
-                alert(self.top_level, "You must select an image of format PNG, GIF or JPG")
+                alert(self.top_level, "You must select an image of format PNG, GIF or JPG.")
                 return
             self.logo2_label["image"] = self.logo2
             self.logo2_to_return = logo_file
@@ -165,25 +165,25 @@ class InitWindow:
 
         if len(players1_entries) != len(nums1) or len(players2_entries) != len(nums2):
             logging.info("All players must have a number (or a number must have a name)")
-            alert(self.top_level, "All players must have a number (or a number must have a name)")
+            alert(self.top_level, "All players must have a number (or a number must have a name).")
             return
         if len(tuple(filter(lambda num: num.isdigit() and len(num) == 2, nums1))) < len(nums1) or \
                 len(tuple(filter(lambda num: num.isdigit() and len(num) == 2, nums2))) < len(nums2):
             logging.info("Player numbers must be numbers and must be two digits")
-            alert(self.top_level, "Player numbers must be numbers and must be two digits")
+            alert(self.top_level, "Player numbers must be numbers and must be two digits.")
             return
         if len(self.team1.get()) > 19 or len(self.team2.get()) > 19:
             logging.info("Team names must not exceed 19 characters")
-            alert(self.top_level, "Team names must not exceed 19 characters")
+            alert(self.top_level, "Team names must not exceed 19 characters.")
             return
         for name in map(lambda entry: entry.get(), players1_entries + players2_entries):
             if len(name) > 14:
                 logging.info("Player names must not exceed 14 characters")
-                alert(self.top_level, "Player names must not exceed 14 characters")
+                alert(self.top_level, "Player names must not exceed 14 characters.")
                 return
         if not self.match.get().isdigit() or not self.timeout.get().isdigit() or not self.suspend.get().isdigit():
             logging.info("Timer times must be numbers")
-            alert(self.top_level, "Timer times must be numbers")
+            alert(self.top_level, "Timer times must be numbers.")
             return
 
         team1 = self.team1.get()
@@ -233,7 +233,7 @@ class InitWindow:
                 config: dict = json.loads(config_raw)
         except FileNotFoundError:
             logging.info(f'No configuration file "{json_file}" found')
-            alert(self.top_level, f'No configuration file "{json_file}" found')
+            alert(self.top_level, f'No configuration file "{json_file}" found.')
             return
 
         # Get those values
@@ -271,7 +271,7 @@ class InitWindow:
         try:
             self.logo1 = ImageTk.PhotoImage(Image.open(logo1).resize((40, 30), Image.ANTIALIAS))
         except FileNotFoundError:
-            alert(self.top_level, f"Could not find image '{logo1}'")
+            alert(self.top_level, f"Could not find image '{logo1}'.")
             logger.warning(f"Could not find image '{logo1}'")
             self.logo1 = ImageTk.PhotoImage(Image.open(self.DEFAULT_LOGO).resize((40, 30), Image.ANTIALIAS))
             logo1 = join("data", "logos", "__logo.png")
@@ -280,7 +280,7 @@ class InitWindow:
         try:
             self.logo2 = ImageTk.PhotoImage(Image.open(logo2).resize((40, 30), Image.ANTIALIAS))
         except FileNotFoundError:
-            alert(self.top_level, f"Could not find image '{logo2}'")
+            alert(self.top_level, f"Could not find image '{logo2}'.")
             logger.warning(f"Could not find image '{logo2}'")
             self.logo2 = ImageTk.PhotoImage(Image.open(self.DEFAULT_LOGO).resize((40, 30), Image.ANTIALIAS))
             logo2 = join("data", "logos", "__logo.png")
@@ -353,4 +353,4 @@ class InitWindow:
 
         logging.info(f'Saved configuration "{json_file}"')
         if message:
-            info(self.top_level, f'Saved configuration "{json_file}"')
+            info(self.top_level, f'Saved configuration "{json_file}."')

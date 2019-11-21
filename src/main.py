@@ -33,6 +33,7 @@ class MainApplication:
         self.root.option_add("*tearOff", False)
         self.root.minsize(width=1000, height=560)
         self.root.title("Handball Score Table")
+        root.protocol("WM_DELETE_WINDOW", self.quit)
         menu_bar = tk.Menu()
         self.root.config(menu=menu_bar)
         self.content = tk.Frame(self.root, padx=8, pady=8)
@@ -43,7 +44,7 @@ class MainApplication:
         file_menu = tk.Menu(menu_bar)
         file_menu.add_command(label="New Match", state="normal", command=self.open_init_window)
         file_menu.add_command(label="Open Spectator Window", command=self.open_spectator_window)
-        file_menu.add_command(label="Exit", command=self.root.quit)  # TODO warn before exit
+        file_menu.add_command(label="Exit", command=self.quit)
         menu_bar.add_cascade(label="File", menu=file_menu)
 
         # Edit menu
@@ -77,6 +78,8 @@ class MainApplication:
         self.suspended_players1: List[Player] = []
         self.suspended_players2: List[Player] = []
         self.is_time_out = False
+
+        self.has_started_match = False
 
         # Team 1
         ###########################################################################################
@@ -246,7 +249,7 @@ class MainApplication:
         if self.__selected_player is None:
             return
         if self.__selected_player.disqualified:
-            info(self.root, f"{self.__selected_player.name} is disqualified")
+            info(self.root, f"{self.__selected_player.name} is disqualified.")
             return
         self.__selected_player.score_up()
         self.selected_scores_var.set("Score: " + str(self.__selected_player.scores))
@@ -262,7 +265,7 @@ class MainApplication:
         if self.__selected_player is None:
             return
         if self.__selected_player.disqualified:
-            info(self.root, f"{self.__selected_player.name} is disqualified")
+            info(self.root, f"{self.__selected_player.name} is disqualified.")
             return
         self.__selected_player.score_down()
         self.selected_scores_var.set("Score: " + str(self.__selected_player.scores))
@@ -278,7 +281,7 @@ class MainApplication:
         if self.__selected_player is None:
             return
         if self.__selected_player.disqualified:
-            info(self.root, f"{self.__selected_player.name} is disqualified")
+            info(self.root, f"{self.__selected_player.name} is disqualified.")
             return
         self.__selected_player.give_card(color)
         self.selected_cards_var.set("Cards: " +
@@ -292,7 +295,7 @@ class MainApplication:
         if self.__selected_player is None:
             return
         if self.__selected_player.disqualified:
-            info(self.root, f"{self.__selected_player.name} is disqualified")
+            info(self.root, f"{self.__selected_player.name} is disqualified.")
             return
         self.__selected_player.take_card(color)
         self.selected_cards_var.set("Cards: " +
@@ -306,7 +309,7 @@ class MainApplication:
         if self.__selected_player is None:
             return
         if self.__selected_player.disqualified:
-            info(self.root, f"{self.__selected_player.name} is disqualified")
+            info(self.root, f"{self.__selected_player.name} is disqualified.")
             return
         if self.__selected_player.can_suspend():
             if not self.timer.get_going() or self.time_out_timer.get_going():
@@ -355,7 +358,7 @@ class MainApplication:
         if self.__selected_player is None:
             return
         if self.__selected_player.disqualified:
-            info(self.root, f"{self.__selected_player.name} is disqualified")
+            info(self.root, f"{self.__selected_player.name} is disqualified.")
             return
         if self.__selected_player.can_release():
             if self.__selected_player.team.order == 1:
@@ -546,6 +549,8 @@ class MainApplication:
         self.logo1 = config.logo1
         self.logo2 = config.logo2
 
+        self.has_started_match = True
+
     # def add_another_player(self, player_name: str, number: int, team):
     #     player = Player(player_name, number, team, self.release_from_timer)
     #     team.add_player(player)
@@ -602,6 +607,13 @@ class MainApplication:
     def about():
         window = tk.Toplevel()
         AboutWindow(window)
+
+    def quit(self):
+        if self.has_started_match:
+            if ask(self.root, "Are you sure you want to exit?"):
+                self.root.quit()
+        else:
+            self.root.quit()
 
 
 def main():

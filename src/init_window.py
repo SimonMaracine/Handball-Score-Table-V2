@@ -20,15 +20,13 @@ class InitWindow:
     LAST_CONFIG = "__last"
     DEFAULT_LOGO = join("data", "logos", "__logo.png")
 
-    def __init__(self, top_level: tk.Toplevel, on_apply: Callable, **kwargs):
+    def __init__(self, top_level: tk.Toplevel, on_apply: Callable):
         self.top_level = top_level
         self.on_apply = on_apply
         self.top_level.minsize(width=670, height=420)
         self.top_level.title("New Match")
         self.content = tk.Frame(self.top_level)
         self.content.pack(padx=10, pady=10, expand=True)
-        for key, value in kwargs.items():
-            self.__setattr__(key, value)
 
         # Containers
         ###########################################################################################
@@ -157,7 +155,7 @@ class InitWindow:
             self.logo2_label["image"] = self.logo2
             self.logo2_to_return = logo_file
 
-    def get_current_entries(self) -> tuple:
+    def get_current_entries(self) -> tuple:  # TODO return type
         players1_entries = tuple(filter(lambda entry: entry.get(), self.team1_players))
         nums1 = tuple(map(lambda entry: entry.get(), tuple(filter(lambda entry: entry.get(), self.players1_nums))))
         players2_entries = tuple(filter(lambda entry: entry.get(), self.team2_players))

@@ -269,7 +269,7 @@ class InitWindow:
         try:
             self.logo1 = ImageTk.PhotoImage(Image.open(logo1).resize((40, 30), Image.ANTIALIAS))
         except FileNotFoundError:
-            alert(self.top_level, f"Could not find image '{logo1}'.")
+            alert(self.top_level, f'Could not find image "{logo1}".')
             logger.warning(f"Could not find image '{logo1}'")
             self.logo1 = ImageTk.PhotoImage(Image.open(self.DEFAULT_LOGO).resize((40, 30), Image.ANTIALIAS))
             logo1 = join("data", "logos", "__logo.png")
@@ -278,7 +278,7 @@ class InitWindow:
         try:
             self.logo2 = ImageTk.PhotoImage(Image.open(logo2).resize((40, 30), Image.ANTIALIAS))
         except FileNotFoundError:
-            alert(self.top_level, f"Could not find image '{logo2}'.")
+            alert(self.top_level, f'Could not find image "{logo2}".')
             logger.warning(f"Could not find image '{logo2}'")
             self.logo2 = ImageTk.PhotoImage(Image.open(self.DEFAULT_LOGO).resize((40, 30), Image.ANTIALIAS))
             logo2 = join("data", "logos", "__logo.png")
@@ -351,4 +351,4 @@ class InitWindow:
 
         logging.info(f'Saved configuration "{json_file}"')
         if message:
-            info(self.top_level, f'Saved configuration "{json_file}."')
+            info(self.top_level, f'Saved configuration "{json_file}".')

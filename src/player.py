@@ -1,4 +1,3 @@
-import logging
 import tkinter as tk
 from typing import Optional, Callable
 
@@ -6,7 +5,7 @@ import src.log
 from src.timer import PlayerTimer
 
 logger = src.log.get_logger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(10)
 
 
 class Player:
@@ -29,6 +28,7 @@ class Player:
         self.suspend_text_var = tk.StringVar(value="{:02d} | {}".format(self.number, PlayerTimer.repr(self.SUS_TIME)))
         self.text_var = tk.StringVar()
 
+        # Suspend labels
         self.main_label: Optional[tk.Label] = None
         self.spec_label: Optional[tk.Label] = None
 
@@ -36,12 +36,12 @@ class Player:
         return "Player {} [{:02d}] - {}".format(self.name, self.number, self.team)
 
     def score_up(self):
-        """Increment player's scores and his/hers team's score"""
+        """Increment player's scores and his/her team's score"""
         self.scores += 1
         self.team.change_score(1)
 
     def score_down(self):
-        """Decrement player's scores and his/hers team's score"""
+        """Decrement player's scores and his/her team's score"""
         if self.scores >= 1:
             self.scores -= 1
             self.team.change_score(-1)

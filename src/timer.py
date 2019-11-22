@@ -1,5 +1,4 @@
 import threading
-import logging
 from os.path import join
 from time import sleep
 from timeit import default_timer
@@ -11,7 +10,7 @@ import src.log
 from src.settings import get_settings
 
 logger = src.log.get_logger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(10)
 
 
 class Timer:

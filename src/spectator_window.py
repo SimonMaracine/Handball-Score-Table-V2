@@ -1,13 +1,11 @@
-import logging
 import tkinter as tk
-
 from PIL import Image, ImageTk
 
 import src.log
 from src.settings import get_settings
 
 logger = src.log.get_logger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(10)
 
 SCL = 1.0
 

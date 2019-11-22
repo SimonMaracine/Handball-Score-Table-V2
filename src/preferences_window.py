@@ -1,5 +1,4 @@
 import json
-import logging
 import tkinter as tk
 from os.path import join
 
@@ -9,7 +8,7 @@ from src.settings import get_settings
 import src.timer
 
 logger = src.log.get_logger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(10)
 
 
 class PreferencesWindow:

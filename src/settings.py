@@ -1,4 +1,3 @@
-import logging
 import json
 from os.path import join
 from typing import Tuple
@@ -6,7 +5,7 @@ from typing import Tuple
 import src.log
 
 logger = src.log.get_logger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(10)
 
 
 def create_settings_file():

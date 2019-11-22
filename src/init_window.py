@@ -1,5 +1,4 @@
 import json
-import logging
 import tkinter as tk
 from tkinter import filedialog
 from os.path import join
@@ -12,7 +11,7 @@ from src.config_object import Config
 from src.alert_window import alert, info
 
 logger = src.log.get_logger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(10)
 
 
 class InitWindow:
@@ -116,7 +115,7 @@ class InitWindow:
         self.logo2_label.grid(column=1, row=1)
 
         tk.Label(config_entries, text="Match time").grid(column=0, row=2, sticky=tk.N)
-        tk.Label(config_entries, text="Timeout time").grid(column=0, row=3, sticky=tk.N)
+        tk.Label(config_entries, text="Time-out time").grid(column=0, row=3, sticky=tk.N)
         tk.Label(config_entries, text="Player suspend time").grid(column=0, row=4, sticky=tk.N)
         tk.Label(config_entries, text="min").grid(column=2, row=2, sticky=tk.N)
         tk.Label(config_entries, text="sec").grid(column=2, row=3, sticky=tk.N)
@@ -162,25 +161,25 @@ class InitWindow:
         nums2 = tuple(map(lambda entry: entry.get(), tuple(filter(lambda entry: entry.get(), self.players2_nums))))
 
         if len(players1_entries) != len(nums1) or len(players2_entries) != len(nums2):
-            logging.info("All players must have a number (or a number must have a name)")
+            logger.info("All players must have a number (or a number must have a name)")
             alert(self.top_level, "All players must have a number (or a number must have a name).")
             return
         if len(tuple(filter(lambda num: num.isdigit() and len(num) == 2, nums1))) < len(nums1) or \
                 len(tuple(filter(lambda num: num.isdigit() and len(num) == 2, nums2))) < len(nums2):
-            logging.info("Player numbers must be numbers and must be two digits")
+            logger.info("Player numbers must be numbers and must be two digits")
             alert(self.top_level, "Player numbers must be numbers and must be two digits.")
             return
         if len(self.team1.get()) > 19 or len(self.team2.get()) > 19:
-            logging.info("Team names must not exceed 19 characters")
+            logger.info("Team names must not exceed 19 characters")
             alert(self.top_level, "Team names must not exceed 19 characters.")
             return
         for name in map(lambda entry: entry.get(), players1_entries + players2_entries):
             if len(name) > 14:
-                logging.info("Player names must not exceed 14 characters")
+                logger.info("Player names must not exceed 14 characters")
                 alert(self.top_level, "Player names must not exceed 14 characters.")
                 return
         if not self.match.get().isdigit() or not self.timeout.get().isdigit() or not self.suspend.get().isdigit():
-            logging.info("Timer times must be numbers")
+            logger.info("Timer times must be numbers")
             alert(self.top_level, "Timer times must be numbers.")
             return
 
@@ -230,7 +229,7 @@ class InitWindow:
                 config_raw = file.read()
                 config: dict = json.loads(config_raw)
         except FileNotFoundError:
-            logging.info(f'No configuration file "{json_file}" found')
+            logger.info(f'No configuration file "{json_file}" found')
             alert(self.top_level, f'No configuration file "{json_file}" found.')
             return
 
@@ -349,6 +348,6 @@ class InitWindow:
         with open(join(self.PATH_TO_CONFIGS, json_file + ".json"), "w") as file:
             json.dump(config, file, sort_keys=True, indent=2)
 
-        logging.info(f'Saved configuration "{json_file}"')
+        logger.info(f'Saved configuration "{json_file}"')
         if message:
             info(self.top_level, f'Saved configuration "{json_file}".')

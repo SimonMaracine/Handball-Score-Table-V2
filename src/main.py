@@ -48,7 +48,7 @@ class MainApplication:
         file_menu = tk.Menu(menu_bar)
         file_menu.add_command(label="New", state="normal", command=self.open_init_window)
         file_menu.add_command(label="Open spectator window", command=self.open_spectator_window)
-        file_menu.add_command(label="Generate_match_statistics", command=None)
+        file_menu.add_command(label="Generate Match Report", command=None)
         file_menu.add_command(label="Exit", command=self.root.quit)
         menu_bar.add_cascade(label="File", menu=file_menu)
 

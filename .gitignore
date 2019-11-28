@@ -14,3 +14,5 @@ Handball-Score-Table-V2
 bin/
 lib/
 lib64
+*.xls
+*.xlsx

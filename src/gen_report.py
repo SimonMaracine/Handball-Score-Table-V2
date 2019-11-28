@@ -1,5 +1,4 @@
 import openpyxl
-
 from src.team import Team
 
 workbook = openpyxl.Workbook()
@@ -10,6 +9,6 @@ def save_to_file(file_name: str):
     workbook.save(file_name)
 
 
-def generate_statistics(team1: Team, team2: Team):
+def generate_report(team1: Team, team2: Team, rounds: int):
     # sheet["A1"] = team1.
     pass

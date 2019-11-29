@@ -45,6 +45,7 @@ class MainApplication:
         file_menu = tk.Menu(menu_bar)
         file_menu.add_command(label="New Match", state="normal", command=self.open_init_window)
         file_menu.add_command(label="Open Spectator Window", command=self.open_spectator_window)
+        file_menu.add_command(label="Generate Match Report", command=None)
         file_menu.add_command(label="Exit", command=self.quit)
         menu_bar.add_cascade(label="File", menu=file_menu)
 
@@ -628,6 +629,9 @@ class MainApplication:
                 self.root.quit()
         else:
             self.root.quit()
+
+    def generate_match_statistics(self):
+        pass
 
 
 def main():

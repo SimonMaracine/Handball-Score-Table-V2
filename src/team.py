@@ -1,3 +1,7 @@
+from typing import List
+from src.player import Player
+
+
 class Team:
     """Class representing a team
 
@@ -7,7 +11,7 @@ class Team:
     def __init__(self, name: str, order: int):
         self.name = name
         self.order = order
-        self.players = []
+        self.players: List[Player] = []
         self.score = 0
         self.time_out_requests = 0
 

@@ -7,6 +7,7 @@ from threading import RLock
 
 import src.log
 import src.spectator_window as spec
+from gen_report import MatchData, RoundData, generate_report
 from src.config_object import Config
 from src.timer import Timer, SelfFixTimer, TimeOutTimer
 from src.spectator_window import SpectatorWindow
@@ -16,6 +17,7 @@ from src.player import Player
 from src.team import Team
 from src.alert_window import ask, info
 from src.about_window import AboutWindow
+from src.change_time_window import ChangeTimeWindow
 
 logger = src.log.get_logger(__name__)
 logger.setLevel(10)
@@ -45,7 +47,7 @@ class MainApplication:
         file_menu = tk.Menu(menu_bar)
         file_menu.add_command(label="New Match", state="normal", command=self.open_init_window)
         file_menu.add_command(label="Open Spectator Window", command=self.open_spectator_window)
-        file_menu.add_command(label="Generate Match Report", command=None)
+        file_menu.add_command(label="Generate Match Report", command=self.generate_match_report)
         file_menu.add_command(label="Exit", command=self.quit)
         menu_bar.add_cascade(label="File", menu=file_menu)
 
@@ -53,6 +55,7 @@ class MainApplication:
         ###########################################################################################
         edit_menu = tk.Menu(menu_bar)
         edit_menu.add_command(label="Preferences", command=self.open_preferences_window)
+        edit_menu.add_command(label="Change Round Time", command=self.change_round_time)
         # edit_menu.add_command(label="Add player", command=None, state="disabled")
         menu_bar.add_cascade(label="Edit", menu=edit_menu)
 
@@ -82,6 +85,8 @@ class MainApplication:
         self.is_time_out = False
 
         self.has_started_match = False
+
+        self.match_data: Optional[MatchData] = None  # TODO set match_data in init teams
 
         # Team 1
         ###########################################################################################
@@ -181,8 +186,8 @@ class MainApplication:
 
         # Round buttons
         ###########################################################################################
-        tk.Button(match, text="Up", command=self.round_up).grid(column=1, row=0)
-        tk.Button(match, text="Down", command=self.round_down).grid(column=1, row=1)
+        tk.Button(match, text="Advance", command=self.advance_round).grid(column=1, row=0)
+        tk.Button(match, text="Reset", command=lambda: logger.warning("NOT IMPLEMENTED YET!")).grid(column=1, row=1)
 
         # Time out buttons
         ###########################################################################################
@@ -436,13 +441,33 @@ class MainApplication:
             self.release()
             self.__selected_player.disqualify()
 
-    def round_up(self):
-        if self.round_num_var.get() < 9:
-            self.round_num_var.set(self.round_num_var.get() + 1)
+    def advance_round(self):
+        if self.round_num_var.get() < 4:
+            # Save current round data
+            try:
+                self.match_data.rounds.append(RoundData(self.team1, self.team2))
+            except AttributeError:  # Teams not initialized
+                logger.info("Teams aren't initialized")
+            else:
+                self.round_num_var.set(self.round_num_var.get() + 1)
 
-    def round_down(self):
+                self.reset_teams(self.team1.name, self.team2.name,
+                                 list(map(lambda player: player.name, self.team1.players)),
+                                 list(map(lambda player: player.name, self.team2.players)),
+                                 list(map(lambda player: str(player.number), self.team1.players)),
+                                 list(map(lambda player: str(player.number), self.team2.players)))
+        else:
+            logger.info("Only 4 rounds are allowed")
+
+    def reset_round(self):
         if self.round_num_var.get() > 1:
             self.round_num_var.set(self.round_num_var.get() - 1)
+
+        self.reset_teams(self.team1.name, self.team2.name,
+                         list(map(lambda player: player.name, self.team1.players)),
+                         list(map(lambda player: player.name, self.team2.players)),
+                         list(map(lambda player: str(player.number), self.team1.players)),
+                         list(map(lambda player: str(player.number), self.team2.players)))
 
     def start(self):
         if not self.is_time_out:
@@ -458,7 +483,7 @@ class MainApplication:
         else:
             self.time_out_timer.pause()
 
-    def stop(self):
+    def stop(self):  # TODO rethink what this should do
         if not self.is_time_out:
             self.timer.stop()
             self.do_players_timers(1)
@@ -507,15 +532,40 @@ class MainApplication:
                     player.timer.pause()
                     time.sleep(0.014)
 
-    def apply_init_config(self, config: Config):
-        # Reset some things
-        self.stop()
+    def reset_teams(self, team1_name: str, team2_name: str, players1: List[str], players2: List[str],
+                    numbers1: List[str], numbers2: List[str]):
+        # Reset these
         self.players1_list.delete(0, tk.END)
         self.players2_list.delete(0, tk.END)
         self.score_team1_var.set("0")
         self.score_team2_var.set("0")
-        self.round_num_var.set("1")
 
+        self.team1 = Team(team1_name, 1)
+        self.team2 = Team(team2_name, 2)
+        self.name_team1_var.set(self.team1.name)
+        self.name_team2_var.set(self.team2.name)
+
+        plrs1 = []
+        plrs2 = []
+        for name, number in zip(players1, numbers1):
+            plrs1.append(Player(name, int(number), self.team1, self.release_from_timer))
+        for name, number in zip(players2, numbers2):
+            plrs2.append(Player(name, int(number), self.team2, self.release_from_timer))
+
+        self.team1.players = plrs1
+        self.team1.sort_players()
+        for i, player in enumerate(self.team1.players):
+            self.players1_list.insert(i, "{} [{:02d}]".format(player.name, player.number))
+
+        self.team2.players = plrs2
+        self.team2.sort_players()
+        for i, player in enumerate(self.team2.players):
+            self.players2_list.insert(i, "{} [{:02d}]".format(player.name, player.number))
+
+    def apply_init_config(self, config: Config):
+        # Reset some things
+        self.stop()
+        self.round_num_var.set("1")
         self.__selected_player = None
         self.player_selected_var.set("Player selected: None")
         self.selected_scores_var.set("Score: n/a")
@@ -523,33 +573,13 @@ class MainApplication:
 
         for window in MainApplication.spectator_windows:
             window.destroy()
-            MainApplication.spectator_windows.clear()
-
-        # Init teams
-        self.team1 = Team(config.team1, 1)
-        self.team2 = Team(config.team2, 2)
-        self.name_team1_var.set(self.team1.name)
-        self.name_team2_var.set(self.team2.name)
+        MainApplication.spectator_windows.clear()
 
         # Init suspend timers before init players
         Player.SUS_TIME = int(config.suspend)
 
-        # Init players
-        players1 = []
-        players2 = []
-        for name, number in zip(config.players1, config.numbers1):
-            players1.append(Player(name, int(number), self.team1, self.release_from_timer))
-        for name, number in zip(config.players2, config.numbers2):
-            players2.append(Player(name, int(number), self.team2, self.release_from_timer))
-
-        self.team1.players = players1
-        self.team1.sort_players()
-        for i, player in enumerate(self.team1.players):
-            self.players1_list.insert(i, "{} [{:02d}]".format(player.name, player.number))
-        self.team2.players = players2
-        self.team2.sort_players()
-        for i, player in enumerate(self.team2.players):
-            self.players2_list.insert(i, "{} [{:02d}]".format(player.name, player.number))
+        # Init players and teams
+        self.reset_teams(config.team1, config.team2, config.players1, config.players2, config.numbers1, config.numbers2)
 
         # Init main timer
         self.timer = MainTimer(self.time_var, None, int(config.match) * 60)
@@ -562,6 +592,9 @@ class MainApplication:
         # Init logos
         self.logo1 = config.logo1
         self.logo2 = config.logo2
+
+        # Init the struct to hold the match data
+        self.match_data = MatchData()
 
         self.has_started_match = True
 
@@ -630,8 +663,21 @@ class MainApplication:
         else:
             self.root.quit()
 
-    def generate_match_statistics(self):
-        pass
+    def change_round_time(self):
+        if self.timer.get_going():
+            logger.info("Stop the timer first!")
+            return
+
+        def on_apply(seconds: int):
+            self.timer = MainTimer(self.time_var, None, seconds * 60)
+            self.time_var.set(self.timer.get_time())
+            logger.debug("Main timer reset")
+
+        window = tk.Toplevel()
+        ChangeTimeWindow(window, on_apply)
+
+    def generate_match_report(self):
+        generate_report(self.match_data)
 
 
 def main():

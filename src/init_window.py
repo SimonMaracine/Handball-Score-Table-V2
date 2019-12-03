@@ -2,7 +2,7 @@ import json
 import tkinter as tk
 from tkinter import filedialog
 from os.path import join
-from typing import List, Callable
+from typing import List, Callable, Union
 
 from PIL import Image, ImageTk
 
@@ -154,7 +154,7 @@ class InitWindow:
             self.logo2_label["image"] = self.logo2
             self.logo2_to_return = logo_file
 
-    def get_current_entries(self) -> tuple:  # TODO return type
+    def get_current_entries(self) -> Union[tuple, None]:
         players1_entries = tuple(filter(lambda entry: entry.get(), self.team1_players))
         nums1 = tuple(map(lambda entry: entry.get(), tuple(filter(lambda entry: entry.get(), self.players1_nums))))
         players2_entries = tuple(filter(lambda entry: entry.get(), self.team2_players))

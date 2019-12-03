@@ -17,4 +17,5 @@ lib64
 *.xls
 *.xlsx
 !report_demo.xls
-
+.~lock.report_demo.xls#
+.~lock.test.xls#

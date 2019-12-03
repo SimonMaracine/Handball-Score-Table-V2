@@ -16,3 +16,5 @@ lib/
 lib64
 *.xls
 *.xlsx
+!report_demo.xls
+

@@ -63,7 +63,6 @@ def _write_to_sheet(sheet: Worksheet, match_data: MatchData, team: int):
     sheet.merge_cells(start_row=3, start_column=3, end_row=4, end_column=3)
     for col in range(2, 4 + len(match_data.rounds) * 2):
         sheet.merge_cells(start_row=5, start_column=col, end_row=6, end_column=col)
-    # sheet1.merge_cells(start_row=4, start_column=4, end_row=4, end_column=5)
 
     # Merge top cells second table, but not rounds
     sheet.merge_cells(start_row=8, start_column=2, end_row=8, end_column=7)
@@ -75,16 +74,19 @@ def _write_to_sheet(sheet: Worksheet, match_data: MatchData, team: int):
     for r, match_round in enumerate(match_data.rounds):  # r starts from 0
         round_team_score: int = match_data.get_team_round_score(team, r + 1)
 
-        sheet.merge_cells(start_row=4, start_column=3 + r * 2, end_row=4, end_column=4 + r * 2)
-        sheet.merge_cells(start_row=10, start_column=3 + r * 2, end_row=10, end_column=4 + r * 2)
+        # Merge the corresponding cells
+        sheet.merge_cells(start_row=4, start_column=4 + r * 2, end_row=4, end_column=5 + r * 2)
+        sheet.merge_cells(start_row=10, start_column=4 + r * 2, end_row=10, end_column=5 + r * 2)
 
-        sheet.cell(4, 4 + r * 2, "Round " + str(r + 1))  # TODO this raises exception
+        # First table
+        sheet.cell(4, 4 + r * 2, "Round " + str(r + 1))
         sheet.cell(5, 4 + r * 2, round_team_score)
         if team == 1:
             sheet.cell(5, 5 + r * 2, match_round.team1.time_out_requests)
         else:
             sheet.cell(5, 5 + r * 2, match_round.team2.time_out_requests)
 
+        # Second table
         sheet.cell(10, 4 + r * 2, "Round " + str(r + 1))
         if team == 1:
             for i, player in enumerate(match_round.team1.players):
@@ -94,3 +96,33 @@ def _write_to_sheet(sheet: Worksheet, match_data: MatchData, team: int):
             for i, player in enumerate(match_round.team2.players):
                 sheet.cell(11 + i, 4 + r * 2, player.scores)
                 sheet.cell(11 + i, 5 + r * 2, f"{player.yellow_cards}, {player.red_cards}")
+
+        # Insert the rest
+        sheet.cell(3, 4 + r * 2, "Score")
+        sheet.cell(3, 5 + r * 2, "TO reqs")
+        sheet.cell(9, 4 + r * 2, "Scores")
+        sheet.cell(9, 5 + r * 2, "Cards")
+
+    # Insert the rest of the data
+    sheet.cell(2, 2, "Team")
+    sheet.cell(3, 2, "Name")
+    sheet.cell(3, 2, "Name")
+    sheet.cell(3, 3, "NO. players")
+    if team == 1:
+        sheet.cell(5, 2, match_data.rounds[0].team1.name)  # doesn't matter which round, because it should stay constant
+        sheet.cell(5, 3, str(len(match_data.rounds[0].team1.players)))
+    else:
+        sheet.cell(5, 2, match_data.rounds[0].team2.name)
+        sheet.cell(5, 3, str(len(match_data.rounds[0].team2.players)))
+
+    sheet.cell(8, 2, "Players")
+    sheet.cell(9, 2, "Number")
+    sheet.cell(9, 3, "Name")
+    if team == 1:
+        for i, player in enumerate(match_data.rounds[0].team1.players):
+            sheet.cell(11 + i, 2, "{:02d}".format(player.number))
+            sheet.cell(11 + i, 3, player.name)
+    else:
+        for i, player in enumerate(match_data.rounds[0].team2.players):
+            sheet.cell(11 + i, 2, "{:02d}".format(player.number))
+            sheet.cell(11 + i, 3, player.name)

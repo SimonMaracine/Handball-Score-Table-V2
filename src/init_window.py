@@ -124,7 +124,7 @@ class InitWindow:
         # Buttons
         ###########################################################################################
         tk.Button(buttons, text="Apply", command=self.apply_new_configuration).grid(column=0, row=0, ipadx=6, padx=8)
-        tk.Button(buttons, text="Discard", command=self.top_level.destroy).grid(column=1, row=0, ipadx=6, padx=8)
+        tk.Button(buttons, text="Cancel", command=self.top_level.destroy).grid(column=1, row=0, ipadx=6, padx=8)
         tk.Button(configs, text="Load config",
                   command=lambda: self.load_configuration(self.config_load.get())).grid(column=1, row=1)
         tk.Button(configs, text="Save config",

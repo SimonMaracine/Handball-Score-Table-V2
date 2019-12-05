@@ -6,6 +6,10 @@ from openpyxl.worksheet.worksheet import Worksheet
 from openpyxl.styles import Font, Alignment
 
 from src.team import Team
+import src.log
+
+logger = src.log.get_logger(__name__)
+logger.setLevel(10)
 
 NORMAL_FONT = Font(name="Arial", size=10)
 BOLD_FONT = Font(name="Arial", size=10, bold=True)
@@ -39,33 +43,44 @@ class MatchData:
         return team_score
 
 
-def save_to_file(workbook: Workbook, file_name: str):
-    workbook.save(file_name)
-
-
 def generate_report(match_data: MatchData):
+    if match_data is None or len(match_data.rounds) == 0:
+        logger.info("There is no data to generate")
+        return
+
     workbook = Workbook()
     sheet1 = workbook.active
-    sheet2 = None
+    sheet1.title = "Team 1"
+    sheet2 = workbook.create_sheet("Team 2")
 
     _write_to_sheet(sheet1, match_data, team=1)
+    _write_to_sheet(sheet2, match_data, team=2)
 
     # sheet1.cell(2, 2).font = BOLD_FONT
     # Set font first table
 
-    save_to_file(workbook, "test.xls")
+    _save_to_file(workbook, "test.xls")
+
+
+def _save_to_file(workbook: Workbook, file_name: str):
+    workbook.save(file_name)
+    logger.info("Saved report as " + file_name)
 
 
 def _write_to_sheet(sheet: Worksheet, match_data: MatchData, team: int):
+    no_rounds = len(match_data.rounds)  # no. rounds to know the width of the table
+    no_players = len(match_data.rounds[0].team1.players) if team == 1 else \
+            len(match_data.rounds[0].team2.players)  # no. players to know the height of the table
+
     # Merge top cells first table, but not rounds
-    sheet.merge_cells(start_row=2, start_column=2, end_row=2, end_column=7)
+    sheet.merge_cells(start_row=2, start_column=2, end_row=2, end_column=3 + no_rounds * 2)  # end col - 1
     sheet.merge_cells(start_row=3, start_column=2, end_row=4, end_column=2)
     sheet.merge_cells(start_row=3, start_column=3, end_row=4, end_column=3)
     for col in range(2, 4 + len(match_data.rounds) * 2):
         sheet.merge_cells(start_row=5, start_column=col, end_row=6, end_column=col)
 
     # Merge top cells second table, but not rounds
-    sheet.merge_cells(start_row=8, start_column=2, end_row=8, end_column=7)
+    sheet.merge_cells(start_row=8, start_column=2, end_row=8, end_column=3 + no_rounds * 2)  # end col - 1
     sheet.merge_cells(start_row=9, start_column=2, end_row=10, end_column=2)
     sheet.merge_cells(start_row=9, start_column=3, end_row=10, end_column=3)
 
@@ -89,7 +104,7 @@ def _write_to_sheet(sheet: Worksheet, match_data: MatchData, team: int):
         # Second table
         sheet.cell(10, 4 + r * 2, "Round " + str(r + 1))
         if team == 1:
-            for i, player in enumerate(match_round.team1.players):
+            for i, player in enumerate(match_round.team1.players):  # TODO check if player is disqualified
                 sheet.cell(11 + i, 4 + r * 2, player.scores)
                 sheet.cell(11 + i, 5 + r * 2, f"{player.yellow_cards}, {player.red_cards}")
         else:
@@ -126,3 +141,24 @@ def _write_to_sheet(sheet: Worksheet, match_data: MatchData, team: int):
         for i, player in enumerate(match_data.rounds[0].team2.players):
             sheet.cell(11 + i, 2, "{:02d}".format(player.number))
             sheet.cell(11 + i, 3, player.name)
+
+    # Apply styling
+    for row in range(2, 11 + no_players):
+        for col in range(2, 4 + no_rounds * 2):
+            cell = sheet.cell(row, col)
+            cell.alignment = ALIGNMENT  # TODO beware, this seems dangerous
+
+    # Styling to first table
+    for row in range(2, 5):
+        for col in range(2, 4 + no_rounds * 2):
+            cell = sheet.cell(row, col)
+            cell.font = BOLD_FONT
+
+    # Styling to second table
+    for row in range(8, 11):
+        for col in range(2, 4 + no_rounds * 2):
+            cell = sheet.cell(row, col)
+            cell.font = BOLD_FONT
+
+    sheet.column_dimensions["C"].width = 25
+    sheet.column_dimensions["C"].width = 20

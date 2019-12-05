@@ -85,8 +85,9 @@ class MainApplication:
         self.is_time_out = False
 
         self.has_started_match = False
+        # self.three_rounds_limit_hit = False
 
-        self.match_data: Optional[MatchData] = None  # TODO set match_data in init teams
+        self.match_data: Optional[MatchData] = None
 
         # Team 1
         ###########################################################################################
@@ -187,7 +188,7 @@ class MainApplication:
         # Round buttons
         ###########################################################################################
         tk.Button(match, text="Advance", command=self.advance_round).grid(column=1, row=0)
-        tk.Button(match, text="Reset", command=lambda: logger.warning("NOT IMPLEMENTED YET!")).grid(column=1, row=1)
+        tk.Button(match, text="Reset", command=self.reset_current_round).grid(column=1, row=1)
 
         # Time out buttons
         ###########################################################################################
@@ -446,10 +447,11 @@ class MainApplication:
             # Save current round data
             try:
                 self.match_data.rounds.append(RoundData(self.team1, self.team2))
-            except AttributeError:  # Teams not initialized
+            except AttributeError:  # match_data is None
                 logger.info("Teams aren't initialized")
             else:
-                self.round_num_var.set(self.round_num_var.get() + 1)
+                no_round = self.round_num_var.get()
+                self.round_num_var.set(no_round + 1)  # TODO maybe improve this up a little bit
 
                 self.reset_teams(self.team1.name, self.team2.name,
                                  list(map(lambda player: player.name, self.team1.players)),
@@ -457,12 +459,9 @@ class MainApplication:
                                  list(map(lambda player: str(player.number), self.team1.players)),
                                  list(map(lambda player: str(player.number), self.team2.players)))
         else:
-            logger.info("Only 4 rounds are allowed")
+            logger.info("Max 3 rounds are allowed")
 
-    def reset_round(self):
-        if self.round_num_var.get() > 1:
-            self.round_num_var.set(self.round_num_var.get() - 1)
-
+    def reset_current_round(self):
         self.reset_teams(self.team1.name, self.team2.name,
                          list(map(lambda player: player.name, self.team1.players)),
                          list(map(lambda player: player.name, self.team2.players)),
@@ -539,6 +538,10 @@ class MainApplication:
         self.players2_list.delete(0, tk.END)
         self.score_team1_var.set("0")
         self.score_team2_var.set("0")
+        self.__selected_player = None
+        self.player_selected_var.set("Player selected: None")
+        self.selected_scores_var.set("Score: n/a")
+        self.selected_cards_var.set("Cards: n/a")
 
         self.team1 = Team(team1_name, 1)
         self.team2 = Team(team2_name, 2)

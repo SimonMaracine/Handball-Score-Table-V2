@@ -8,7 +8,7 @@ from threading import RLock
 
 import src.log
 import src.spectator_window as spec
-from gen_report import MatchData, RoundData, generate_report
+from src.gen_report import MatchData, RoundData, generate_report
 from src.config_object import Config
 from src.timer import Timer, SelfFixTimer, TimeOutTimer
 from src.spectator_window import SpectatorWindow

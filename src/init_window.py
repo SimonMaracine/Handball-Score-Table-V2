@@ -19,6 +19,18 @@ class InitWindow:
     LAST_CONFIG = "__last"
     DEFAULT_LOGO = join("data", "logos", "__logo.png")
 
+    MAX_PLAYER_NAME_LENGTH = 14
+    MAX_TEAM_NAME_LENGTH = 19
+
+    MIN_TIMER_TIME = 1
+    MAX_TIMER_TIME = 90
+
+    MIN_TIMEOUT_TIME = 10
+    MAX_TIMEOUT_TIME = 900
+
+    MIN_SUSPEND_TIME = 15
+    MAX_SUSPEND_TIME = 300
+
     def __init__(self, top_level: tk.Toplevel, on_apply: Callable):
         self.top_level = top_level
         self.on_apply = on_apply
@@ -83,8 +95,8 @@ class InitWindow:
 
         # Config entries
         ###########################################################################################
-        self.logo1_to_return = self.DEFAULT_LOGO
-        self.logo2_to_return = self.DEFAULT_LOGO
+        self.logo1_to_return = InitWindow.DEFAULT_LOGO
+        self.logo2_to_return = InitWindow.DEFAULT_LOGO
 
         tk.Button(config_entries, text="Logo 1", command=lambda: self.select_logo(1)).grid(column=0, row=0)
         tk.Button(config_entries, text="Logo 2", command=lambda: self.select_logo(2)).grid(column=0, row=1)
@@ -106,8 +118,8 @@ class InitWindow:
 
         # Config labels
         ###########################################################################################
-        self.logo1 = ImageTk.PhotoImage(Image.open(join("data", "logos", "__logo.png")).resize((40, 30), Image.ANTIALIAS))
-        self.logo2 = ImageTk.PhotoImage(Image.open(join("data", "logos", "__logo.png")).resize((40, 30), Image.ANTIALIAS))
+        self.logo1 = ImageTk.PhotoImage(Image.open(InitWindow.DEFAULT_LOGO).resize((40, 30), Image.ANTIALIAS))
+        self.logo2 = ImageTk.PhotoImage(Image.open(InitWindow.DEFAULT_LOGO).resize((40, 30), Image.ANTIALIAS))
 
         self.logo1_label = tk.Label(config_entries, image=self.logo1)
         self.logo1_label.grid(column=1, row=0)
@@ -169,12 +181,12 @@ class InitWindow:
             logger.info("Player numbers must be numbers and must be two digits")
             alert(self.top_level, "Player numbers must be numbers and must be two digits.")
             return
-        if len(self.team1.get()) > 19 or len(self.team2.get()) > 19:
+        if len(self.team1.get()) > InitWindow.MAX_TEAM_NAME_LENGTH or len(self.team2.get()) > InitWindow.MAX_TEAM_NAME_LENGTH:
             logger.info("Team names must not exceed 19 characters")
             alert(self.top_level, "Team names must not exceed 19 characters.")
             return
         for name in map(lambda entry: entry.get(), players1_entries + players2_entries):
-            if len(name) > 14:
+            if len(name) > InitWindow.MAX_PLAYER_NAME_LENGTH:
                 logger.info("Player names must not exceed 14 characters")
                 alert(self.top_level, "Player names must not exceed 14 characters.")
                 return
@@ -196,19 +208,19 @@ class InitWindow:
         logo2 = self.logo2_to_return
 
         m = int(match)
-        if m < 1:
+        if m < InitWindow.MIN_TIMER_TIME:
             match = "1"
-        elif m > 90:
+        elif m > InitWindow.MAX_TIMER_TIME:
             match = "90"
         t = int(timeout)
-        if t < 10:
+        if t < InitWindow.MIN_TIMEOUT_TIME:
             timeout = "10"
-        elif t > 900:
+        elif t > InitWindow.MAX_TIMEOUT_TIME:
             timeout = "900"
         s = int(suspend)
-        if s < 15:
+        if s < InitWindow.MIN_SUSPEND_TIME:
             suspend = "15"
-        elif s > 300:
+        elif s > InitWindow.MAX_SUSPEND_TIME:
             suspend = "300"
 
         return team1, team2, players1, players2, nums1, nums2, match, timeout, suspend, logo1, logo2
@@ -270,8 +282,8 @@ class InitWindow:
         except FileNotFoundError:
             alert(self.top_level, f'Could not find image "{logo1}".')
             logger.warning(f"Could not find image '{logo1}'")
-            self.logo1 = ImageTk.PhotoImage(Image.open(self.DEFAULT_LOGO).resize((40, 30), Image.ANTIALIAS))
-            logo1 = join("data", "logos", "__logo.png")
+            self.logo1 = ImageTk.PhotoImage(Image.open(InitWindow.DEFAULT_LOGO).resize((40, 30), Image.ANTIALIAS))
+            logo1 = InitWindow.DEFAULT_LOGO
         self.logo1_label["image"] = self.logo1
         self.logo1_to_return = logo1
         try:
@@ -279,8 +291,8 @@ class InitWindow:
         except FileNotFoundError:
             alert(self.top_level, f'Could not find image "{logo2}".')
             logger.warning(f"Could not find image '{logo2}'")
-            self.logo2 = ImageTk.PhotoImage(Image.open(self.DEFAULT_LOGO).resize((40, 30), Image.ANTIALIAS))
-            logo2 = join("data", "logos", "__logo.png")
+            self.logo2 = ImageTk.PhotoImage(Image.open(InitWindow.DEFAULT_LOGO).resize((40, 30), Image.ANTIALIAS))
+            logo2 = InitWindow.DEFAULT_LOGO
         self.logo2_label["image"] = self.logo2
         self.logo2_to_return = logo2
 

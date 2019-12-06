@@ -1,6 +1,7 @@
 import sys
 import time
 import tkinter as tk
+from tkinter import filedialog
 from os.path import join
 from typing import Optional, List
 from threading import RLock
@@ -443,30 +444,38 @@ class MainApplication:
             self.__selected_player.disqualify()
 
     def advance_round(self):
-        if self.round_num_var.get() < 4:
-            # Save current round data
+        if ask(self.root, "Are you sure you want to advance to the next round?"):
             try:
-                self.match_data.rounds.append(RoundData(self.team1, self.team2))
-            except AttributeError:  # match_data is None
-                logger.info("Teams aren't initialized")
-            else:
-                no_round = self.round_num_var.get()
-                self.round_num_var.set(no_round + 1)  # TODO maybe improve this up a little bit
+                if self.round_num_var.get() < 4:
+                    # Save current round data
+                    try:
+                        self.match_data.rounds.append(RoundData(self.team1, self.team2))
+                    except AttributeError:  # match_data is None
+                        logger.info("Teams aren't initialized")
+                    else:
+                        no_round = self.round_num_var.get()
+                        if no_round == 3:
+                            self.round_num_var.set("end")
+                        else:
+                            self.round_num_var.set(no_round + 1)
 
-                self.reset_teams(self.team1.name, self.team2.name,
-                                 list(map(lambda player: player.name, self.team1.players)),
-                                 list(map(lambda player: player.name, self.team2.players)),
-                                 list(map(lambda player: str(player.number), self.team1.players)),
-                                 list(map(lambda player: str(player.number), self.team2.players)))
-        else:
-            logger.info("Max 3 rounds are allowed")
+                        self.stop()
+                        self.reset_teams(self.team1.name, self.team2.name,
+                                         list(map(lambda player: player.name, self.team1.players)),
+                                         list(map(lambda player: player.name, self.team2.players)),
+                                         list(map(lambda player: str(player.number), self.team1.players)),
+                                         list(map(lambda player: str(player.number), self.team2.players)))
+            except tk.TclError:  # the variable is "end", so you cannot advance further
+                logger.info("Max 3 rounds are allowed")
 
     def reset_current_round(self):
-        self.reset_teams(self.team1.name, self.team2.name,
-                         list(map(lambda player: player.name, self.team1.players)),
-                         list(map(lambda player: player.name, self.team2.players)),
-                         list(map(lambda player: str(player.number), self.team1.players)),
-                         list(map(lambda player: str(player.number), self.team2.players)))
+        if ask(self.root, "Are you sure you want to reset this round?"):
+            self.stop()
+            self.reset_teams(self.team1.name, self.team2.name,
+                             list(map(lambda player: player.name, self.team1.players)),
+                             list(map(lambda player: player.name, self.team2.players)),
+                             list(map(lambda player: str(player.number), self.team1.players)),
+                             list(map(lambda player: str(player.number), self.team2.players)))
 
     def start(self):
         if not self.is_time_out:
@@ -482,7 +491,7 @@ class MainApplication:
         else:
             self.time_out_timer.pause()
 
-    def stop(self):  # TODO rethink what this should do
+    def stop(self):
         if not self.is_time_out:
             self.timer.stop()
             self.do_players_timers(1)
@@ -504,6 +513,8 @@ class MainApplication:
                 self.spec_time_out()
             except Exception:
                 pass
+        else:
+            info(self.root, "The timer must be going or it is already time-out.")
 
     def back_to_game(self):
         self.time_out_timer_text.grid_remove()
@@ -525,6 +536,7 @@ class MainApplication:
                 if player.suspended:
                     self.release_from_timer(player)
                     time.sleep(0.014)
+                    logger.debug("Stopped player timer " + player.name)
         else:  # pause
             for player in self.team1.players + self.team2.players:
                 if player.suspended:
@@ -626,7 +638,7 @@ class MainApplication:
                 with self.lock2:
                     for suspended_player in self.suspended_players1 + self.suspended_players2:
                         self.__selected_player = suspended_player
-                        self.put_suspended_player_on_spec(self.__selected_player.team.order)  # TODO might raise exception if selected player is None
+                        self.put_suspended_player_on_spec(self.__selected_player.team.order)
             self.__selected_player = currently_selected_player
 
             if self.is_time_out:
@@ -668,7 +680,8 @@ class MainApplication:
 
     def change_round_time(self):
         if self.timer.get_going():
-            logger.info("Stop the timer first!")
+            logger.info("Stop the timer first")
+            info(self.root, "Stop/Pause the timer first.")
             return
 
         def on_apply(seconds: int):
@@ -680,7 +693,16 @@ class MainApplication:
         ChangeTimeWindow(window, on_apply)
 
     def generate_match_report(self):
-        generate_report(self.match_data)
+        if self.has_started_match:
+            file_name = filedialog.asksaveasfilename(parent=self.root, defaultextension=".xlsx",
+                                                     filetypes=[("Excel", ".xlsx"), ("Excel", ".xls")])
+            logger.debug(file_name)
+
+            if file_name:
+                generate_report(self.match_data, file_name)
+                info(self.root, f"Report saved as {file_name}.")
+        else:
+            info(self.root, "There is nothing to generate.")
 
 
 def main():

@@ -2,12 +2,16 @@ import tkinter as tk
 from typing import Union, Callable
 
 import src.log
+from src.alert_window import alert
 
 logger = src.log.get_logger(__name__)
 logger.setLevel(10)
 
 
 class ChangeTimeWindow:
+
+    MIN_TIMER_TIME = 1
+    MAX_TIMER_TIME = 90
 
     def __init__(self, top_level: tk.Toplevel, on_apply: Callable):
         self.top_level = top_level
@@ -29,12 +33,13 @@ class ChangeTimeWindow:
         try:
             entry = int(self.entry.get())
         except ValueError:
-            logger.info("Entry must be a number")  # TODO alert on this
+            logger.info("Entry must be a number")
+            alert(self.top_level, "Entry must be a number.")
             return
 
-        if entry < 1:
+        if entry < ChangeTimeWindow.MIN_TIMER_TIME:
             entry = 1
-        elif entry > 90:
+        elif entry > ChangeTimeWindow.MAX_TIMER_TIME:
             entry = 90
 
         self.on_apply(entry)

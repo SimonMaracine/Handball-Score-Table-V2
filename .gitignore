@@ -4,9 +4,9 @@ build/
 dist/
 *.pyc
 *.json
-!custom.json
+#!custom.json
 !settings.json
-!_last.json
+#!__last.json
 *.spec
 *.xcf
 Handball-Score-Table-V2

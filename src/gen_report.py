@@ -3,7 +3,8 @@ from typing import List
 
 from openpyxl import Workbook
 from openpyxl.worksheet.worksheet import Worksheet
-from openpyxl.styles import Font, Alignment
+from openpyxl.styles import Font, Alignment, Border, Side
+from openpyxl.styles.borders import BORDER_THIN
 
 from src.team import Team
 import src.log
@@ -11,9 +12,20 @@ import src.log
 logger = src.log.get_logger(__name__)
 logger.setLevel(10)
 
-# NORMAL_FONT = Font(name="Arial", size=10)
 BOLD_FONT = Font(name="Calibri", size=10, bold=True)
 ALIGNMENT = Alignment(horizontal="center", vertical="center")
+
+BORDER_LEFT = Border(left=Side(border_style=BORDER_THIN, color="00000000"))
+BORDER_RIGHT = Border(right=Side(border_style=BORDER_THIN, color="00000000"))
+BORDER_TOP = Border(top=Side(border_style=BORDER_THIN, color="00000000"))
+BORDER_BOTTOM = Border(bottom=Side(border_style=BORDER_THIN, color="00000000"))
+
+BORDER_TOP_LEFT = Border(top=Side(border_style=BORDER_THIN, color="00000000"),
+                         left=Side(border_style=BORDER_THIN, color="00000000"))
+BORDER_BOTTOM_LEFT = Border(bottom=Side(border_style=BORDER_THIN, color="00000000"),
+                            left=Side(border_style=BORDER_THIN, color="00000000"))
+BORDER_BOTTOM_RIGHT = Border(bottom=Side(border_style=BORDER_THIN, color="00000000"),
+                             right=Side(border_style=BORDER_THIN, color="00000000"))
 
 
 @dataclass
@@ -143,22 +155,57 @@ def _write_to_sheet(sheet: Worksheet, match_data: MatchData, team: int):
             sheet.cell(11 + i, 2, player.name)
 
     # Apply styling
+    ##################################################
+
+    # Center all cells
     for row in range(2, 11 + no_players):
         for col in range(1, 3 + no_rounds * 2):
-            cell = sheet.cell(row, col)
-            cell.alignment = ALIGNMENT
+            sheet.cell(row, col).alignment = ALIGNMENT
 
-    # Styling to first table
+    # Bold font to first table
     for row in range(2, 5):
         for col in range(1, 3 + no_rounds * 2):
-            cell = sheet.cell(row, col)
-            cell.font = BOLD_FONT
+            sheet.cell(row, col).font = BOLD_FONT
 
-    # Styling to second table
+    # Bold font to second table
     for row in range(8, 11):
         for col in range(1, 3 + no_rounds * 2):
-            cell = sheet.cell(row, col)
-            cell.font = BOLD_FONT
+            sheet.cell(row, col).font = BOLD_FONT
 
+    # Set a larger width for columns A and B
     sheet.column_dimensions["A"].width = 15
     sheet.column_dimensions["B"].width = 15
+
+    # Add borders
+    sheet.cell(2, 1).border = BORDER_TOP_LEFT
+
+    sheet.cell(2, 2 + no_rounds * 2).border = BORDER_RIGHT
+    sheet.cell(3, 2 + no_rounds * 2).border = BORDER_RIGHT
+    sheet.cell(4, 2 + no_rounds * 2).border = BORDER_RIGHT
+    sheet.cell(5, 2 + no_rounds * 2).border = BORDER_RIGHT
+
+    for col in range(1, 3 + no_rounds * 2):
+        sheet.cell(6, col).border = BORDER_BOTTOM
+
+    sheet.cell(3, 1).border = BORDER_LEFT
+    sheet.cell(5, 1).border = BORDER_LEFT
+
+    sheet.cell(8, 1).border = BORDER_TOP_LEFT
+
+    sheet.cell(8, 2 + no_rounds * 2).border = BORDER_RIGHT
+    sheet.cell(9, 2 + no_rounds * 2).border = BORDER_RIGHT
+    sheet.cell(10, 2 + no_rounds * 2).border = BORDER_RIGHT
+    for row in range(11, 10 + no_players):
+        sheet.cell(row, 2 + no_rounds * 2).border = BORDER_RIGHT
+
+    sheet.cell(10 + no_players, 2 + no_rounds * 2).border = BORDER_BOTTOM_RIGHT
+
+    for col in range(2, 2 + no_rounds * 2):
+        sheet.cell(10 + no_players, col).border = BORDER_BOTTOM
+
+    sheet.cell(10 + no_players, 1).border = BORDER_BOTTOM_LEFT
+
+    sheet.cell(9, 1).border = BORDER_LEFT
+    for row in range(11, 10 + no_players):
+        sheet.cell(row, 1).border = BORDER_LEFT
+    ##################################################

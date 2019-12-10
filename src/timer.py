@@ -141,7 +141,11 @@ class Timer:
         while self._going:
             # s = default_timer()
 
-            sleep(0.999 - (stop - start))
+            try:
+                sleep(0.998 - (stop - start))
+            except ValueError as err:
+                logger.error(err)
+                sleep(0.88)
             start = default_timer()
             if self._going:
                 self._tick()
@@ -176,7 +180,11 @@ class PlayerTimer(Timer):
         while self._going:
             # s = default_timer()
 
-            sleep(0.999 - (stop - start))
+            try:
+                sleep(0.998 - (stop - start))
+            except ValueError as err:
+                logger.error(err)
+                sleep(0.88)
             start = default_timer()
             if self._going:
                 self._tick()
@@ -247,7 +255,11 @@ class SelfFixTimer(Timer):
         while self._going:
             # s = default_timer()
 
-            sleep(0.999 - (stop - start))
+            try:
+                sleep(0.998 - (stop - start))
+            except ValueError as err:
+                logger.error(err)
+                sleep(0.88)
             start = default_timer()
             if self._going:
                 self._tick()
@@ -324,7 +336,11 @@ class TimeOutTimer(Timer):
         while self._going:
             # s = default_timer()
 
-            sleep(0.999 - (stop - start))
+            try:
+                sleep(0.998 - (stop - start))
+            except ValueError as err:
+                logger.error(err)
+                sleep(0.88)
             start = default_timer()
             if self._going:
                 self._tick()

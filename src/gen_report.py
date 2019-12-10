@@ -22,6 +22,8 @@ BORDER_BOTTOM = Border(bottom=Side(border_style=BORDER_THIN, color="00000000"))
 
 BORDER_TOP_LEFT = Border(top=Side(border_style=BORDER_THIN, color="00000000"),
                          left=Side(border_style=BORDER_THIN, color="00000000"))
+BORDER_TOP_RIGHT = Border(top=Side(border_style=BORDER_THIN, color="00000000"),
+                          right=Side(border_style=BORDER_THIN, color="00000000"))
 BORDER_BOTTOM_LEFT = Border(bottom=Side(border_style=BORDER_THIN, color="00000000"),
                             left=Side(border_style=BORDER_THIN, color="00000000"))
 BORDER_BOTTOM_RIGHT = Border(bottom=Side(border_style=BORDER_THIN, color="00000000"),
@@ -38,6 +40,9 @@ class MatchData:
 
     def __init__(self):
         self.rounds: List[RoundData] = []
+        self.round_time = 0
+        self.timeout_time = 0
+        self.suspend_time = 0
 
     def __str__(self):
         return f"MatchData({self.rounds})"
@@ -68,8 +73,9 @@ def generate_report(match_data: MatchData, name: str):
     sheet1.title = "Team 1"
     sheet2 = workbook.create_sheet("Team 2")
 
-    _write_to_sheet(sheet1, match_data, team=1)
-    _write_to_sheet(sheet2, match_data, team=2)
+    _write_team_to_sheet(sheet1, match_data, team=1)
+    _write_team_to_sheet(sheet2, match_data, team=2)
+    _write_match_to_sheet(sheet1, match_data)
 
     _save_to_file(workbook, name)
 
@@ -79,7 +85,41 @@ def _save_to_file(workbook: Workbook, file_name: str):
     logger.info("Saved report as " + file_name)
 
 
-def _write_to_sheet(sheet: Worksheet, match_data: MatchData, team: int):
+def _write_match_to_sheet(sheet: Worksheet, match_data: MatchData):
+    assert match_data.round_time != 0 and match_data.timeout_time != 0 and match_data.suspend_time != 0
+
+    no_players = len(match_data.rounds[0].team1.players)  # no. players of first team to know the height of the table
+
+    # Merge cells
+    sheet.merge_cells(start_row=12 + no_players, start_column=1, end_row=13 + no_players, end_column=1)
+
+    # Insert data
+    sheet.cell(12 + no_players, 1, "Round")
+    sheet.cell(12 + no_players, 2, "Time")
+    sheet.cell(12 + no_players, 3, "Sus. time")
+    sheet.cell(12 + no_players, 4, "TO time")
+
+    sheet.cell(13 + no_players, 2, match_data.round_time)
+    sheet.cell(13 + no_players, 3, match_data.suspend_time)
+    sheet.cell(13 + no_players, 4, match_data.timeout_time)
+
+    # Apply styling
+    for row in range(12 + no_players, 14 + no_players):
+        for col in range(1, 5):
+            sheet.cell(row, col).alignment = ALIGNMENT
+
+    sheet.cell(12 + no_players, 1).border = BORDER_TOP_LEFT
+    sheet.cell(12 + no_players, 2).border = BORDER_TOP
+    sheet.cell(12 + no_players, 3).border = BORDER_TOP
+    sheet.cell(12 + no_players, 4).border = BORDER_TOP_RIGHT
+
+    sheet.cell(13 + no_players, 4).border = BORDER_BOTTOM_RIGHT
+    sheet.cell(13 + no_players, 3).border = BORDER_BOTTOM
+    sheet.cell(13 + no_players, 2).border = BORDER_BOTTOM
+    sheet.cell(13 + no_players, 1).border = BORDER_BOTTOM_LEFT
+
+
+def _write_team_to_sheet(sheet: Worksheet, match_data: MatchData, team: int):
     no_rounds = len(match_data.rounds)  # no. rounds to know the width of the table
     no_players = len(match_data.rounds[0].team1.players) if team == 1 else \
             len(match_data.rounds[0].team2.players)  # no. players to know the height of the table

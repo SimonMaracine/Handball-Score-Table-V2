@@ -610,6 +610,10 @@ class MainApplication:
 
         # Init the struct to hold the match data
         self.match_data = MatchData()
+        self.match_data.round_time = self.timer.get_raw_time() // 60
+        self.match_data.timeout_time = self.time_out_timer.get_raw_time()
+        self.match_data.suspend_time = Player.SUS_TIME
+        logger.debug("Round time " + str(self.match_data.round_time))
 
         self.has_started_match = True
 
@@ -687,6 +691,7 @@ class MainApplication:
         def on_apply(seconds: int):
             self.timer = MainTimer(self.time_var, None, seconds * 60)
             self.time_var.set(self.timer.get_time())
+            # self.match_data.round_time = minutes
             logger.debug("Main timer reset")
 
         window = tk.Toplevel()

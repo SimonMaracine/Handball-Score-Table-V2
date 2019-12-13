@@ -466,9 +466,6 @@ class MainApplication:
                                          list(map(lambda player: player.name, self.team2.players)),
                                          list(map(lambda player: str(player.number), self.team1.players)),
                                          list(map(lambda player: str(player.number), self.team2.players)))
-
-                        # here reset spec window
-                        self.reopen_spectator_window()
             except tk.TclError:  # the variable is "end", so you cannot advance further
                 logger.info("Max 3 rounds are allowed")
 
@@ -581,6 +578,9 @@ class MainApplication:
         for i, player in enumerate(self.team2.players):
             self.players2_list.insert(i, "{} [{:02d}]".format(player.name, player.number))
 
+        # here reset spectator window, because everything else is reset
+        self.reopen_spectator_window()
+
     def apply_init_config(self, config: Config):
         # Reset some things
         self.stop()
@@ -590,13 +590,8 @@ class MainApplication:
         self.selected_scores_var.set("Score: n/a")
         self.selected_cards_var.set("Cards: n/a")
 
-        self.reopen_spectator_window()
-
         # Init suspend timers before init players
         Player.SUS_TIME = int(config.suspend)
-
-        # Init players and teams
-        self.reset_teams(config.team1, config.team2, config.players1, config.players2, config.numbers1, config.numbers2)
 
         # Init main timer
         self.timer = MainTimer(self.time_var, None, int(config.match) * 60)
@@ -609,6 +604,9 @@ class MainApplication:
         # Init logos
         self.logo1 = config.logo1
         self.logo2 = config.logo2
+
+        # Init players and teams
+        self.reset_teams(config.team1, config.team2, config.players1, config.players2, config.numbers1, config.numbers2)
 
         # Init the struct to hold the match data
         self.match_data = MatchData()

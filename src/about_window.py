@@ -11,10 +11,11 @@ class AboutWindow:
         self.content.pack(padx=10, pady=20, expand=True)
 
         tk.Label(self.content, text="Handball Score Table V2", font="Times, 18").grid(column=0, row=0, sticky=tk.N)
-        tk.Label(self.content, text="Made by Simon Mărăcine", font="Times, 10").grid(column=0, row=1)
+        tk.Label(self.content, text="V2 because the first one was a failure.").grid(column=0, row=1)
+        tk.Label(self.content, text="Made by Simon Mărăcine", font="Times, 10").grid(column=0, row=2)
 
         ok = tk.Frame(self.content)
-        ok.grid(column=0, row=2, sticky=tk.S)
+        ok.grid(column=0, row=3, sticky=tk.S)
         tk.Button(ok, text="Ok", command=self.close).pack(padx=0, pady=14, side="bottom")
 
     def close(self):

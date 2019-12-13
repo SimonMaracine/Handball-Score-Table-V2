@@ -1,4 +1,7 @@
 import tkinter as tk
+from typing import Tuple, Optional
+from dataclasses import dataclass
+
 from PIL import Image, ImageTk
 
 import src.log
@@ -10,9 +13,14 @@ logger.setLevel(10)
 SCL = 1.0
 
 
+@dataclass
+class SpecWinPointer:
+    window: Optional[tk.Toplevel]
+
+
 class SpectatorWindow:
 
-    def __init__(self, top_level: tk.Toplevel, **kwargs):
+    def __init__(self, top_level: tk.Toplevel, x: int, y: int, **kwargs):
         global SCL
         SCL, _ = get_settings()
 
@@ -20,6 +28,10 @@ class SpectatorWindow:
         self.top_level.minsize(width=int(1000 * SCL), height=int(670 * SCL))
         self.top_level.title("Handball Score Table")
         self.top_level.protocol("WM_DELETE_WINDOW", self.close)
+
+        if x != 0 and y != 0:
+            self.top_level.geometry(f"+{x}+{y}")
+
         self.content = tk.Frame(self.top_level)
         self.content.pack(expand=True, padx=int(6 * SCL), pady=int(6 * SCL))
         for key, value in kwargs.items():
@@ -123,7 +135,8 @@ class SpectatorWindow:
         self.to_give_back(spec_time_out=lambda: self.time_out(),
                           spec_back_to_game=lambda: self.back_to_game(),
                           spec_team1_suspended=self.team1_suspended,
-                          spec_team2_suspended=self.team2_suspended)
+                          spec_team2_suspended=self.team2_suspended,
+                          spec_close=lambda: self.close())
 
     def time_out(self):
         self.timer_text.grid_remove()
@@ -133,6 +146,10 @@ class SpectatorWindow:
         self.time_out_timer_text.grid_remove()
         self.timer_text.grid()
 
-    def close(self):
-        self.spectator_windows.remove(self.top_level)
+    def close(self) -> Tuple[int, int]:
+        x = self.top_level.winfo_x()
+        y = self.top_level.winfo_y()
+
+        self.spectator_window.window = None
         self.top_level.destroy()
+        return x, y

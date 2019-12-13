@@ -11,14 +11,14 @@ import src.spectator_window as spec
 from src.gen_report import MatchData, RoundData, generate_report
 from src.config_object import Config
 from src.timer import Timer, SelfFixTimer, TimeOutTimer
-from src.spectator_window import SpectatorWindow
+from src.spectator_window import SpectatorWindow, SpecWinPointer
 from src.init_window import InitWindow
 from src.preferences_window import PreferencesWindow
+from src.about_window import AboutWindow
+from src.change_time_window import ChangeTimeWindow
 from src.player import Player
 from src.team import Team
 from src.alert_window import ask, info
-from src.about_window import AboutWindow
-from src.change_time_window import ChangeTimeWindow
 
 logger = src.log.get_logger(__name__)
 logger.setLevel(10)
@@ -30,7 +30,7 @@ elif sys.platform == "win32":
 
 
 class MainApplication:
-    spectator_windows = []
+    spectator_window = SpecWinPointer(None)
 
     def __init__(self, root: tk.Tk):
         self.root = root
@@ -452,6 +452,7 @@ class MainApplication:
                         self.match_data.rounds.append(RoundData(self.team1, self.team2))
                     except AttributeError:  # match_data is None
                         logger.info("Teams aren't initialized")
+                        info(self.root, "Teams aren't initialized.")
                     else:
                         no_round = self.round_num_var.get()
                         if no_round == 3:
@@ -465,6 +466,9 @@ class MainApplication:
                                          list(map(lambda player: player.name, self.team2.players)),
                                          list(map(lambda player: str(player.number), self.team1.players)),
                                          list(map(lambda player: str(player.number), self.team2.players)))
+
+                        # here reset spec window
+                        self.reopen_spectator_window()
             except tk.TclError:  # the variable is "end", so you cannot advance further
                 logger.info("Max 3 rounds are allowed")
 
@@ -586,9 +590,7 @@ class MainApplication:
         self.selected_scores_var.set("Score: n/a")
         self.selected_cards_var.set("Cards: n/a")
 
-        for window in MainApplication.spectator_windows:
-            window.destroy()
-        MainApplication.spectator_windows.clear()
+        self.reopen_spectator_window()
 
         # Init suspend timers before init players
         Player.SUS_TIME = int(config.suspend)
@@ -626,16 +628,16 @@ class MainApplication:
     #     else:
     #         self.players2_list.insert(tk.LAST, "{} [{:02d}]".format(player.name, player.number))
 
-    def open_spectator_window(self):
-        if len(MainApplication.spectator_windows) < 1:
+    def open_spectator_window(self, x: int = 0, y: int = 0):
+        if MainApplication.spectator_window.window is None:
             window = tk.Toplevel()
-            MainApplication.spectator_windows.append(window)
-            SpectatorWindow(window, players1=self.team1.players, players2=self.team2.players, time_var=self.time_var,
+            MainApplication.spectator_window.window = window
+            SpectatorWindow(window, x, y, players1=self.team1.players, players2=self.team2.players, time_var=self.time_var,
                             round_num_var=self.round_num_var, score_team1_var=self.score_team1_var,
                             score_team2_var=self.score_team2_var, name_team1_var=self.name_team1_var,
                             name_team2_var=self.name_team2_var, time_out_var=self.time_out_var,
-                            logo1=self.logo1, logo2=self.logo2,
-                            to_give_back=self.take_from_window, spectator_windows=MainApplication.spectator_windows)
+                            logo1=self.logo1, logo2=self.logo2, spectator_window=self.spectator_window,
+                            to_give_back=self.take_from_window)
 
             currently_selected_player = self.__selected_player
             with self.lock1:
@@ -708,6 +710,14 @@ class MainApplication:
                 info(self.root, f"Report saved as {file_name}.")
         else:
             info(self.root, "There is nothing to generate.")
+
+    def reopen_spectator_window(self):
+        try:
+            x, y = self.spec_close()
+        except Exception:
+            pass
+        else:
+            self.open_spectator_window(x, y)
 
 
 def main():

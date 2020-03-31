@@ -1,0 +1,3 @@
+To freeze the program:
+    1. pip install PyInstaller
+    2. python -OO -m PyInstaller Handball-Score-Table-V2.py --onefile --windowed --hidden-import=PIL._tkinter_finder

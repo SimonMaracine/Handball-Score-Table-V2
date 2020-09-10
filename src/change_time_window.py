@@ -16,7 +16,6 @@ class ChangeTimeWindow:
     def __init__(self, top_level: tk.Toplevel, on_apply: Callable):
         self.top_level = top_level
         self.on_apply = on_apply
-        self.top_level.minsize(width=215, height=120)
         self.top_level.title("Change Round Time")
         self.content = tk.Frame(self.top_level)
         self.content.pack(padx=10, pady=10, expand=True)

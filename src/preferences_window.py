@@ -15,7 +15,6 @@ class PreferencesWindow:
 
     def __init__(self, top_level: tk.Toplevel):
         self.top_level = top_level
-        self.top_level.minsize(width=270, height=200)
         self.top_level.title("Preferences")
         self.content = tk.Frame(self.top_level)
         self.content.pack(padx=10, pady=10, expand=True)

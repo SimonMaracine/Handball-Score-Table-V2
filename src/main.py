@@ -4,7 +4,7 @@ import tkinter as tk
 from tkinter import filedialog
 from os.path import join
 from typing import Optional, List
-from threading import RLock
+from threading import Lock
 
 import src.log
 import src.spectator_window as spec
@@ -18,7 +18,7 @@ from src.about_window import AboutWindow
 from src.change_time_window import ChangeTimeWindow
 from src.player import Player
 from src.team import Team
-from src.alert_window import ask, info
+from src.alert_window import ask, info, alert
 
 logger = src.log.get_logger(__name__)
 logger.setLevel(10)
@@ -35,7 +35,6 @@ class MainApplication:
     def __init__(self, root: tk.Tk):
         self.root = root
         self.root.option_add("*tearOff", False)
-        self.root.minsize(width=1000, height=560)
         self.root.title("Handball Score Table")
         root.protocol("WM_DELETE_WINDOW", self.quit)
         menu_bar = tk.Menu()
@@ -224,8 +223,8 @@ class MainApplication:
         tk.Button(container2, text="Disqualify",
                   command=self.disqualify).grid(column=0, row=6, columnspan=2)
 
-        self.lock1 = RLock()
-        self.lock2 = RLock()
+        self.lock1 = Lock()
+        self.lock2 = Lock()
 
     def run(self):
         self.root.mainloop()
@@ -707,7 +706,7 @@ class MainApplication:
                 generate_report(self.match_data, file_name)
                 info(self.root, f"Report saved as {file_name}.")
         else:
-            info(self.root, "There is nothing to generate.")
+            alert(self.root, "There is nothing to generate.")
 
     def reopen_spectator_window(self):
         try:

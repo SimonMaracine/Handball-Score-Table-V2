@@ -25,7 +25,6 @@ class SpectatorWindow:
         SCL, _ = get_settings()
 
         self.top_level = top_level
-        self.top_level.minsize(width=int(1000 * SCL), height=int(670 * SCL))
         self.top_level.title("Handball Score Table")
         self.top_level.protocol("WM_DELETE_WINDOW", self.close)
 

@@ -5,7 +5,6 @@ class AboutWindow:
 
     def __init__(self, top_level: tk.Toplevel):
         self.top_level = top_level
-        self.top_level.minsize(width=322, height=160)
         self.top_level.title("About")
         self.content = tk.Frame(self.top_level)
         self.content.pack(padx=10, pady=20, expand=True)
